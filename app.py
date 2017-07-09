@@ -1,10 +1,15 @@
 import redis
+import pymongo
+import random
+
 from nameko.rpc import rpc, RpcProxy
 from nameko.timer import timer
-import random
+
 
 # @todo #12:15min use URI from env
 REDIS_POOL = redis.ConnectionPool(host='localhost', port=6379, db=0)
+
+mongo_client = pymongo.MongoClient("mongodb://127.0.0.1:27017/db")
 
 
 class CampaignsRunnerService:
@@ -49,13 +54,15 @@ class SubscriberService:
     name = "subscriber_service"
 
     @rpc
-    def get_subscribers(self, filters):
-        # @todo #1:30min get random subscribers / filter by targetings / take N rows
+    def get_subscribers(self, filters, limit):
         print("SubscriberService.get_subscribers: getting subscribers")
-        return [
-            {"token": "d7b7d98c7d98b7d7b9adcb9ad-1"},
-            {"token": "d7b7d98c7d98b7d7b9adcb9ad-4"}
+        db = mongo_client.db
+        pipeline = [
+            # {"country_code": {"$not": {"$in": ["USA"]}}}
+            {"$match": filters},
+            {"$sample": {"size": limit}}
         ]
+        return list(db.subscribers.aggregate(pipeline))
 
 
 class CampaignProcessorService:
