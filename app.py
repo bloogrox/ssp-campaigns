@@ -1,3 +1,4 @@
+import os
 import redis
 import pymongo
 import random
@@ -7,9 +8,9 @@ from nameko.timer import timer
 
 
 # @todo #12:15min use URI from env
-REDIS_POOL = redis.ConnectionPool(host='localhost', port=6379, db=0)
+REDIS_POOL = redis.ConnectionPool.from_url(os.environ["REDIS_URL"])
 
-mongo_client = pymongo.MongoClient("mongodb://127.0.0.1:27017/db")
+mongo_client = pymongo.MongoClient(os.environ["MONGO_URL"])
 
 
 class CampaignsRunnerService:
