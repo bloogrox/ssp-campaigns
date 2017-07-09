@@ -17,8 +17,8 @@ class CampaignsRunnerService:
             self.campaign_processor_service.process_campaign.call_async(campaign)
 
 
-# @todo rewrite to a wrapper module for campaign api 
-# this doesn't need to be a service
+# @todo #1:30min rewrite to a wrapper module for campaign api 
+#  this doesn't need to be a service
 class CampaignService:
     name = "campaign_service"
 
@@ -36,7 +36,7 @@ class StatsService:
 
     @rpc
     def get_pushes_total_count(self, campaign_id):
-        # @todo perform a call to Druid
+        # @todo #1:30min perform a call to Druid
         print("StatsService.get_pushes_total_count: get total pushes count for the campaign %d" % campaign_id)
         return random.randint(50, 100)
 
@@ -46,7 +46,7 @@ class SubscriberService:
 
     @rpc
     def get_subscribers(self, filters):
-        # @todo get random subscribers / filter by targetings / take N rows
+        # @todo #1:30min get random subscribers / filter by targetings / take N rows
         print("SubscriberService.get_subscribers: getting subscribers")
         return [
             {"token": "d7b7d98c7d98b7d7b9adcb9ad-1"},
@@ -66,7 +66,7 @@ class CampaignProcessorService:
     @rpc
     def process_campaign(self, payload):
         print("CampaignProcessorService.process_campaign: processing campaign - %s" % payload)
-        # @todo daily count check
+        # @todo #1:15min daily count check
         total_limit = payload['total_limit']
         total_count = self.stats_service.get_pushes_total_count(payload["id"])
         # targetings = payload["targetings"]
@@ -74,7 +74,7 @@ class CampaignProcessorService:
             print("CampaignProcessorService.process_campaign: campaign limit exceeded: %s" % payload)
             return None
 
-        # @todo send targetings
+        # @todo #1:15min send targetings
         subscribers = self.subscriber_service.get_subscribers({})
         for subscriber in subscribers:
             self.subscriber_processor_service.process_subscriber.call_async(subscriber)
@@ -86,8 +86,8 @@ class Queue:
 
     @rpc
     def publish(self, payload):
-        # @todo connect to rabbitmq
-        # @todo publish to sell-imp queue
+        # @todo #1:15min connect to rabbitmq
+        # @todo #1:15min publish to sell-imp queue
         print("Queue.publish: published: " + str(payload))
 
 
@@ -96,7 +96,7 @@ class CounterService:
 
     @rpc
     def get_pushes_count(self, token):
-        # @todo perform a call to Redis
+        # @todo #1:15min perform a call to Redis
         print("CounterService.get_pushes_count: requesting push count")
         return random.randint(0, 4)
 
@@ -110,7 +110,7 @@ class SubscriberProcessorService:
     @rpc
     def process_subscriber(self, payload):
         """
-        @todo get limit-per-user value from global settings
+        @todo #1:15min get limit-per-user value from global settings
         """
         print("SubscriberProcessorService.process_subscriber: processing subscriber: " + str(payload))
         if self.counter_service.get_pushes_count("token") <= 3:

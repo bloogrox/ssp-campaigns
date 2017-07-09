@@ -16,5 +16,4 @@ def test_campaigns_runner_service():
     service.campaign_processor_service.process_campaign.call_async.assert_called_once_with({"id": 1})
 
 
-# @todo #3:1hour write tests for other services
-
+# @todo #3:60min write tests for other services
