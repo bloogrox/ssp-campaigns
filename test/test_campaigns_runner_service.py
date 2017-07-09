@@ -1,7 +1,7 @@
 from nameko.rpc import RpcProxy, rpc
 from nameko.testing.services import worker_factory
 
-from helloworld import CampaignsRunnerService
+from app import CampaignsRunnerService
 
 
 def test_campaigns_runner_service():
