@@ -74,7 +74,7 @@ class CampaignProcessorService:
             print("CampaignProcessorService.process_campaign: campaign limit exceeded: %s" % payload)
             return None
 
-        # @todo #1:15min send targetings
+        # @todo #1:15min send targetings data to receive needed auditory
         subscribers = self.subscriber_service.get_subscribers({})
         for subscriber in subscribers:
             self.subscriber_processor_service.process_subscriber.call_async(subscriber)
