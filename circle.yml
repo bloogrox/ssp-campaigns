@@ -8,3 +8,4 @@ machine:
 
   environment:
     REDIS_URL: redis://localhost:6379
+    MONGO_URL: mongodb://127.0.0.1:27017/db
