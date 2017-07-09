@@ -1,0 +1,7 @@
+machine:
+  services:
+    - redis
+    - rabbitmq-server
+
+  python:
+    version: 3.6.0

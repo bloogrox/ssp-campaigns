@@ -1,6 +1,10 @@
+import redis
 from nameko.rpc import rpc, RpcProxy
 from nameko.timer import timer
 import random
+
+# @todo #12:15min use URI from env
+REDIS_POOL = redis.ConnectionPool(host='localhost', port=6379, db=0)
 
 
 class CampaignsRunnerService:
@@ -96,9 +100,14 @@ class CounterService:
 
     @rpc
     def get_pushes_count(self, token):
-        # @todo #1:15min perform a call to Redis
         print("CounterService.get_pushes_count: requesting push count")
-        return random.randint(0, 4)
+        client = redis.Redis(connection_pool=REDIS_POOL)
+        value = client.get(f"subscriber.pushes.count:{token}")
+        try:
+            return int(value)
+        except TypeError:
+            # If None returned
+            return 0
 
 
 class SubscriberProcessorService:
