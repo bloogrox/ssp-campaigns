@@ -1,7 +1,7 @@
 from nameko.rpc import RpcProxy, rpc
 from nameko.testing.services import worker_factory
 
-from app import CampaignsRunnerService
+from app import CampaignsRunnerService, CounterService
 
 
 def test_campaigns_runner_service():
@@ -14,6 +14,11 @@ def test_campaigns_runner_service():
 
     service.campaign_service.get_campaigns.assert_called_once()
     service.campaign_processor_service.process_campaign.call_async.assert_called_once_with({"id": 1})
+
+
+def test_counter_service():
+    service = worker_factory(CounterService)
+    assert 0 == service.get_pushes_count("token")
 
 
 # @todo #3:60min write tests for other services
