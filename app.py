@@ -30,6 +30,12 @@ rmq_pool = pika_pool.QueuedPool(
     stale=45,
 )
 
+
+# country_whitelist = []
+country_blacklist = ["VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX", "MYS", "MAR", "HUN", "ESP",
+                     "ITA", "PAK", "TUR", "TWN", "CHL", "GEO", "PER", "CZE", "AZE", "SRB", "KAZ"]
+
+
 class CampaignsRunnerService:
     name = "campaigns_runner_service"
 
@@ -104,6 +110,9 @@ class CampaignProcessorService:
             return None
 
         # @todo #1:15min send targetings data to receive needed auditory
+
+        # @todo #9:15min filter users by country codes (whitelist and blacklist)
+        #  IN country list, NOT IN country list
         subscribers = self.subscriber_service.get_subscribers({}, 1)
         for subscriber in subscribers:
             self.subscriber_processor_service.process_subscriber.call_async(subscriber)
