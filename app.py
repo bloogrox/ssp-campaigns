@@ -111,9 +111,9 @@ class CampaignProcessorService:
 
         # @todo #1:15min send targetings data to receive needed auditory
 
-        # @todo #9:15min filter users by country codes (whitelist and blacklist)
-        #  IN country list, NOT IN country list
-        subscribers = self.subscriber_service.get_subscribers({}, 1)
+        filters = {"country_code": {"$not": {"$in": country_blacklist}}}
+        limit = 1
+        subscribers = self.subscriber_service.get_subscribers(filters, limit)
         for subscriber in subscribers:
             self.subscriber_processor_service.process_subscriber.call_async(subscriber)
         print("CampaignProcessorService.process_campaign: campaign: " + str(payload) + " - processed")
