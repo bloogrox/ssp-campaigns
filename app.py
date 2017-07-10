@@ -96,7 +96,8 @@ class SubscriberService:
     @rpc
     def update_subscriber(self, document):
         db = mongo_client.db
-        db.subscribers.replace_one({"_id": document["_id"]}, document, upsert=True)
+        (db.subscribers
+         .replace_one({"_id": document["_id"]}, document, upsert=True))
 
 
 class CampaignProcessorService:
