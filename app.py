@@ -215,9 +215,22 @@ class SubscriberRemoteStorageService:
         resp = requests.get(url, params=params, headers=headers)
         return resp.json()["total_count"]
 
-    def load_subscribers(self, per_page, page_no):
-        # @todo #19:30min get page of subscribers from remote storage
-        pass
+    @rpc
+    def subscribers(self, per_page, page_number):
+        url = f"{self.base_url}subscribers"
+        params = {
+            "per_page": per_page,
+            "pgno": page_number}
+        headers = {
+            "X-Auth-Token": os.environ["PUSHW_AUTH_TOKEN"],
+            "X-Auth-Key": os.environ["PUSHW_AUTH_KEY"]
+        }
+        resp = requests.get(url, params=params, headers=headers)
+        return resp.json()["lines"]
+
+
+# @todo #25:60min create api wrapper for remote subscribers
+#  and use it in SubscriberRemoteStorageService
 
 
 class SyncerService:
