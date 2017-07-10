@@ -1,0 +1,2 @@
+AMQP_URI: ${RABBITMQ_BIGWIG_URL}
+max_workers: 1
