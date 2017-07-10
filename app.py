@@ -1,6 +1,5 @@
 import os
 import json
-import random
 import redis
 import pymongo
 import pika
@@ -13,13 +12,13 @@ from nameko.rpc import rpc, RpcProxy
 from nameko.timer import timer
 
 
-REDIS_POOL = redis.ConnectionPool.from_url(os.environ["REDIS_URL"])
+REDIS_POOL = redis.ConnectionPool.from_url(os.environ["REDISCLOUD_URL"])
 
-mongo_client = pymongo.MongoClient(os.environ["MONGO_URL"])
+mongo_client = pymongo.MongoClient(os.environ["MONGOHQ_URL"])
 
 # 'amqp://guest:guest@localhost:5672/
 pika_params = pika.URLParameters(
-    os.environ["RABBITMQ_BIGWIG_URL"] + '?'
+    os.environ["X_RABBITMQ_BIGWIG_URL"] + '?'
     'socket_timeout=10&'
     'connection_attempts=2'
 )
@@ -38,6 +37,23 @@ rmq_pool = pika_pool.QueuedPool(
 country_blacklist = ["VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX",
                      "MYS", "MAR", "HUN", "ESP", "ITA", "PAK", "TUR", "TWN",
                      "CHL", "GEO", "PER", "CZE", "AZE", "SRB", "KAZ"]
+
+
+campaigns = [
+    {
+        "id": 1,
+        "dsp_id": 1,
+        "total_limit": 100000, 
+        "daily_limit": 1000, 
+        "targetings": [
+            {
+                "field": "country", 
+                "operator": "NOT IN",
+                "value": country_blacklist
+            }
+        ]
+    }
+]
 
 
 class CampaignsRunnerService:
@@ -64,10 +80,7 @@ class CampaignService:
     @rpc
     def get_campaigns(self):
         print("CampaignService.get_campaigns: getting active campaigns")
-        return [
-            {"id": 1, "total_limit": 60},
-            {"id": 2, "total_limit": 80}
-        ]
+        return campaigns
 
 
 class StatsService:
@@ -78,7 +91,6 @@ class StatsService:
         # @todo #1:30min perform a call to Druid
         print(f"StatsService.get_pushes_total_count: "
               "get total pushes count for the campaign {campaign_id}")
-        return random.randint(50, 100)
 
 
 class SubscriberService:
