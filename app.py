@@ -93,9 +93,10 @@ class SubscriberService:
         ]
         return list(db.subscribers.aggregate(pipeline))
 
-    def update_subscriber(self):
-        # @todo #19:30min implement update subscriber in mongo
-        pass
+    @rpc
+    def update_subscriber(self, document):
+        db = mongo_client.db
+        db.subscribers.replace_one({"_id": document["_id"]}, document, upsert=True)
 
 
 class CampaignProcessorService:
