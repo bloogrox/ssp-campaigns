@@ -1,1 +1,1 @@
-worker: nameko run --config nameko.yml app --logfile -
+worker: nameko run --config nameko.yml app
