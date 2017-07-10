@@ -6,6 +6,8 @@ import pymongo
 import pika
 import pika_pool
 import requests
+from geolite2 import geolite2
+import pycountry
 
 from nameko.rpc import rpc, RpcProxy
 from nameko.timer import timer
@@ -197,9 +199,6 @@ class Timer:
         print("tick")
         self.campaigns_runner_service.run.call_async()
 
-    def run_subscriber_sync(self):
-        self.syncer_service.run.call_async()
-
 
 class SubscriberRemoteStorageService:
     name = "subscriber_remote_storage_service"
@@ -238,15 +237,54 @@ class SubscriberRemoteStorageService:
 class SyncerService:
     name = "syncer_service"
 
-    subscriber_service = RpcProxy("subscriber_service")
+    subscriber_remote_storage_service = (
+        RpcProxy("subscriber_remote_storage_service"))
+    syncer_page_processor_service = RpcProxy("syncer_page_processor_service")
+
+    @rpc
+    def run(self):
+        total_count = self.subscriber_remote_storage_service.get_total_count()
+        print(f"SyncerService.run: total count is {total_count}")
+        for page_number in range((total_count // 1000) + 1):
+            pages_count = (self.syncer_page_processor_service.process_page
+                           .call_async(1000, page_number))
+
+
+class SyncerPageProcessorService:
+    name = "syncer_page_processor_service"
+
+    syncer_subscriber_persister_service = (
+        RpcProxy("syncer_subscriber_persister_service"))
     subscriber_remote_storage_service = (
         RpcProxy("subscriber_remote_storage_service"))
 
-    def run(self):
-        # @todo #19:45min implement data syncing
+    @rpc
+    def process_page(self, limit, page_number):
+        subscribers = (self.subscriber_remote_storage_service
+                       .subscribers(limit, page_number))
+        print("SyncerService.process_page: "
+              f"page {page_number} loaded")
+        for subscriber in subscribers:
+            self.syncer_subscriber_persister_service.persist.call_async(subscriber)
 
-        # get total count
-        # calc pages count
-        # get page
-        # update all subscribers
-        pass
+
+class SyncerSubscriberPersisterService:
+    name = "syncer_subscriber_persister_service"
+
+    subscriber_service = RpcProxy("subscriber_service")
+
+    @rpc
+    def persist(self, subscriber):
+        reader = geolite2.reader()
+        ip_info = reader.get(subscriber["ip_address"])
+        
+        alpha_2 = ip_info["country"]["iso_code"]
+        alpha_3 = pycountry.countries.get(alpha_2=alpha_2).alpha_3
+        
+        subscriber["timezone"] = ip_info["location"]["time_zone"]
+        subscriber["country"] = alpha_3
+
+        self.subscriber_service.update_subscriber.call_async(subscriber)
+
+        print("SyncerSubscriberPersisterService.persist: "
+              "successfully persisted " + subscriber["_id"])
