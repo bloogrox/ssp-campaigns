@@ -116,20 +116,14 @@ class Queue:
     @rpc
     def publish(self, payload):
         with rmq_pool.acquire() as cxn:
-            pass
-
-        # @todo #1:15min publish to sell-imp queue
-
-        # cxn.channel.basic_publish(
-        #     body=json.dumps(payload),
-        #     exchange='',
-        #     routing_key='sell-imp',
-        #     properties=pika.BasicProperties(
-        #         content_type='application/json',
-        #         content_encoding='utf-8',
-        #         delivery_mode=2,
-        #     )
-        # )
+            cxn.channel.basic_publish(
+                body=json.dumps(payload),
+                exchange='',
+                routing_key='sell-imp',
+                properties=pika.BasicProperties(
+                    content_type='plain/text'
+                )
+            )
         print("Queue.publish: published: " + str(payload))
 
 
@@ -156,9 +150,9 @@ class SubscriberProcessorService:
 
     @rpc
     def process_subscriber(self, payload):
-        """
-        @todo #1:15min get limit-per-user value from global settings
-        """
+        # @todo #1:15min get limit-per-user value from global settings
+        
+        # @todo #11:30min filter user by timezone
         print("SubscriberProcessorService.process_subscriber: processing subscriber: " + str(payload))
         if self.counter_service.get_pushes_count("token") <= 3:
             self.queue.publish.call_async(payload)
