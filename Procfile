@@ -1,0 +1,1 @@
+worker: nameko run app
