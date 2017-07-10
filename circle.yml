@@ -13,11 +13,11 @@ machine:
 
 
 dependencies:
-  pre:
+  post:
     - pip install flake8
 
 
 test:
   override:
-    # - flake8
     - python -m pytest
+    - flake8
