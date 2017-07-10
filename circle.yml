@@ -7,9 +7,10 @@ machine:
     - rabbitmq-server
 
   environment:
-    REDIS_URL: redis://localhost:6379
-    MONGO_URL: mongodb://127.0.0.1:27017/db
+    REDISCLOUD_URL: redis://localhost:6379
+    MONGOHQ_URL: mongodb://127.0.0.1:27017/db
     RABBITMQ_BIGWIG_URL: "amqp://guest:guest@127.0.0.1/"
+    X_RABBITMQ_BIGWIG_URL: "amqp://guest:guest@127.0.0.1/"
 
 
 dependencies:
