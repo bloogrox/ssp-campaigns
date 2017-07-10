@@ -33,8 +33,9 @@ rmq_pool = pika_pool.QueuedPool(
 
 
 # country_whitelist = []
-country_blacklist = ["VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX", "MYS", "MAR", "HUN", "ESP",
-                     "ITA", "PAK", "TUR", "TWN", "CHL", "GEO", "PER", "CZE", "AZE", "SRB", "KAZ"]
+country_blacklist = ["VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX",
+                     "MYS", "MAR", "HUN", "ESP", "ITA", "PAK", "TUR", "TWN",
+                     "CHL", "GEO", "PER", "CZE", "AZE", "SRB", "KAZ"]
 
 
 class CampaignsRunnerService:
@@ -47,11 +48,13 @@ class CampaignsRunnerService:
     def run(self):
         campaigns = self.campaign_service.get_campaigns()
         for campaign in campaigns:
-            print("CampaignsRunnerService.run: sending campaign: " + str(campaign) + " for processing.")
-            self.campaign_processor_service.process_campaign.call_async(campaign)
+            print(f"CampaignsRunnerService.run: sending campaign: {campaign}"
+                  " for processing.")
+            (self.campaign_processor_service.process_campaign
+             .call_async(campaign))
 
 
-# @todo #1:30min rewrite to a wrapper module for campaign api 
+# @todo #1:30min rewrite to a wrapper module for campaign api
 #  this doesn't need to be a service
 class CampaignService:
     name = "campaign_service"
@@ -60,8 +63,8 @@ class CampaignService:
     def get_campaigns(self):
         print("CampaignService.get_campaigns: getting active campaigns")
         return [
-            {"id": 1, "total_limit": 60}, 
-            {"id": 2, "total_limit": 80} 
+            {"id": 1, "total_limit": 60},
+            {"id": 2, "total_limit": 80}
         ]
 
 
@@ -71,7 +74,8 @@ class StatsService:
     @rpc
     def get_pushes_total_count(self, campaign_id):
         # @todo #1:30min perform a call to Druid
-        print("StatsService.get_pushes_total_count: get total pushes count for the campaign %d" % campaign_id)
+        print(f"StatsService.get_pushes_total_count: "
+              "get total pushes count for the campaign {campaign_id}")
         return random.randint(50, 100)
 
 
@@ -105,13 +109,15 @@ class CampaignProcessorService:
 
     @rpc
     def process_campaign(self, payload):
-        print("CampaignProcessorService.process_campaign: processing campaign - %s" % payload)
+        print("CampaignProcessorService.process_campaign: "
+              f"processing campaign - {payload}")
         # @todo #1:15min daily count check
         total_limit = payload['total_limit']
         total_count = self.stats_service.get_pushes_total_count(payload["id"])
         # targetings = payload["targetings"]
         if total_count >= total_limit:
-            print("CampaignProcessorService.process_campaign: campaign limit exceeded: %s" % payload)
+            print("CampaignProcessorService.process_campaign: "
+                  f"campaign limit exceeded: {payload}")
             return None
 
         # @todo #1:15min send targetings data to receive needed auditory
@@ -120,8 +126,10 @@ class CampaignProcessorService:
         limit = 1
         subscribers = self.subscriber_service.get_subscribers(filters, limit)
         for subscriber in subscribers:
-            self.subscriber_processor_service.process_subscriber.call_async(subscriber)
-        print("CampaignProcessorService.process_campaign: campaign: " + str(payload) + " - processed")
+            (self.subscriber_processor_service.process_subscriber
+             .call_async(subscriber))
+        print("CampaignProcessorService.process_campaign: "
+              f"campaign: {payload} - processed")
 
 
 class Queue:
@@ -138,7 +146,7 @@ class Queue:
                     content_type='plain/text'
                 )
             )
-        print("Queue.publish: published: " + str(payload))
+        print(f"Queue.publish: published: {payload}")
 
 
 class CounterService:
@@ -165,13 +173,15 @@ class SubscriberProcessorService:
     @rpc
     def process_subscriber(self, payload):
         # @todo #1:15min get limit-per-user value from global settings
-        
+
         # @todo #11:30min filter user by timezone
-        print("SubscriberProcessorService.process_subscriber: processing subscriber: " + str(payload))
+        print("SubscriberProcessorService.process_subscriber: "
+              f"processing subscriber: {payload}")
         if self.counter_service.get_pushes_count("token") <= 3:
             self.queue.publish.call_async(payload)
         else:
-            print("SubscriberProcessorService.process_subscriber: limit for subscriber: %s exceeded" % payload)
+            print("SubscriberProcessorService.process_subscriber: "
+                  f"limit for subscriber: {payload} exceeded")
 
 
 class Timer:
@@ -184,7 +194,6 @@ class Timer:
     def run_campaigns(self):
         print("tick")
         self.campaigns_runner_service.run.call_async()
-
 
     def run_subscriber_sync(self):
         self.syncer_service.run.call_async()
@@ -215,7 +224,8 @@ class SyncerService:
     name = "syncer_service"
 
     subscriber_service = RpcProxy("subscriber_service")
-    subscriber_remote_storage_service = RpcProxy("subscriber_remote_storage_service")
+    subscriber_remote_storage_service = (
+        RpcProxy("subscriber_remote_storage_service"))
 
     def run(self):
         # @todo #19:45min implement data syncing
