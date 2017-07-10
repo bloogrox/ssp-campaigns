@@ -21,3 +21,10 @@ test:
   override:
     - python -m pytest
     - flake8
+
+
+deployment:
+  prod:
+    branch: master
+    heroku:
+      appname: pushw-campaigns
