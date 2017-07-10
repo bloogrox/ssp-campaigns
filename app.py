@@ -43,11 +43,11 @@ campaigns = [
     {
         "id": 1,
         "dsp_id": 1,
-        "total_limit": 100000, 
-        "daily_limit": 1000, 
+        "total_limit": 100000,
+        "daily_limit": 1000,
         "targetings": [
             {
-                "field": "country", 
+                "field": "country",
                 "operator": "NOT IN",
                 "value": country_blacklist
             }
@@ -128,8 +128,9 @@ class CampaignProcessorService:
         print("CampaignProcessorService.process_campaign: "
               f"processing campaign - {payload}")
         # @todo #1:15min daily count check
-        total_limit = payload['total_limit']
-        # total_count = self.stats_service.get_pushes_total_count(payload["id"])
+
+        # total_limit = payload['total_limit']
+        # total_count = self.stats_service.get_pushes_total_count()
         # targetings = payload["targetings"]
         # if total_count >= total_limit:
         #     print("CampaignProcessorService.process_campaign: "
