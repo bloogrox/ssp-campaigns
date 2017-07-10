@@ -1,17 +1,34 @@
 import os
+import json
+import random
 import redis
 import pymongo
-import random
+import pika
+import pika_pool
 
 from nameko.rpc import rpc, RpcProxy
 from nameko.timer import timer
 
 
-# @todo #12:15min use URI from env
 REDIS_POOL = redis.ConnectionPool.from_url(os.environ["REDIS_URL"])
 
 mongo_client = pymongo.MongoClient(os.environ["MONGO_URL"])
 
+# 'amqp://guest:guest@localhost:5672/
+pika_params = pika.URLParameters(
+    os.environ["RABBITMQ_BIGWIG_URL"] + '?'
+    'socket_timeout=10&'
+    'connection_attempts=2'
+)
+
+rmq_pool = pika_pool.QueuedPool(
+    create=lambda: pika.BlockingConnection(parameters=pika_params),
+    max_size=10,
+    max_overflow=10,
+    timeout=10,
+    recycle=3600,
+    stale=45,
+)
 
 class CampaignsRunnerService:
     name = "campaigns_runner_service"
@@ -87,7 +104,7 @@ class CampaignProcessorService:
             return None
 
         # @todo #1:15min send targetings data to receive needed auditory
-        subscribers = self.subscriber_service.get_subscribers({})
+        subscribers = self.subscriber_service.get_subscribers({}, 1)
         for subscriber in subscribers:
             self.subscriber_processor_service.process_subscriber.call_async(subscriber)
         print("CampaignProcessorService.process_campaign: campaign: " + str(payload) + " - processed")
@@ -98,8 +115,21 @@ class Queue:
 
     @rpc
     def publish(self, payload):
-        # @todo #1:15min connect to rabbitmq
+        with rmq_pool.acquire() as cxn:
+            pass
+
         # @todo #1:15min publish to sell-imp queue
+
+        # cxn.channel.basic_publish(
+        #     body=json.dumps(payload),
+        #     exchange='',
+        #     routing_key='sell-imp',
+        #     properties=pika.BasicProperties(
+        #         content_type='application/json',
+        #         content_encoding='utf-8',
+        #         delivery_mode=2,
+        #     )
+        # )
         print("Queue.publish: published: " + str(payload))
 
 
