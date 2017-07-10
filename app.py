@@ -5,6 +5,7 @@ import redis
 import pymongo
 import pika
 import pika_pool
+import requests
 
 from nameko.rpc import rpc, RpcProxy
 from nameko.timer import timer
@@ -192,9 +193,18 @@ class Timer:
 class SubscriberRemoteStorageService:
     name = "subscriber_remote_storage_service"
 
+    base_url = "http://push-w.ru/api/"
+
+    @rpc
     def get_total_count(self):
-        # @todo #19:15min get total subscriber count in remote storage
-        pass
+        url = f"{self.base_url}subscribers"
+        params = {"per_page": 1}
+        headers = {
+            "X-Auth-Token": os.environ["PUSHW_AUTH_TOKEN"],
+            "X-Auth-Key": os.environ["PUSHW_AUTH_KEY"]
+        }
+        resp = requests.get(url, params=params, headers=headers)
+        return resp.json()["total_count"]
 
     def load_subscribers(self, per_page, page_no):
         # @todo #19:30min get page of subscribers from remote storage
