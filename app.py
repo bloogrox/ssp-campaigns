@@ -88,6 +88,10 @@ class SubscriberService:
         ]
         return list(db.subscribers.aggregate(pipeline))
 
+    def update_subscriber(self):
+        # @todo #19:30min implement update subscriber in mongo
+        pass
+
 
 class CampaignProcessorService:
     """Process campaign and fetch subscribers
@@ -173,8 +177,41 @@ class Timer:
     name = "timer_service"
 
     campaigns_runner_service = RpcProxy("campaigns_runner_service")
+    syncer_service = RpcProxy("syncer_service")
 
     @timer(interval=1)
     def run_campaigns(self):
         print("tick")
         self.campaigns_runner_service.run.call_async()
+
+
+    def run_subscriber_sync(self):
+        self.syncer_service.run.call_async()
+
+
+class SubscriberRemoteStorageService:
+    name = "subscriber_remote_storage_service"
+
+    def get_total_count(self):
+        # @todo #19:15min get total subscriber count in remote storage
+        pass
+
+    def load_subscribers(self, per_page, page_no):
+        # @todo #19:30min get page of subscribers from remote storage
+        pass
+
+
+class SyncerService:
+    name = "syncer_service"
+
+    subscriber_service = RpcProxy("subscriber_service")
+    subscriber_remote_storage_service = RpcProxy("subscriber_remote_storage_service")
+
+    def run(self):
+        # @todo #19:45min implement data syncing
+
+        # get total count
+        # calc pages count
+        # get page
+        # update all subscribers
+        pass
