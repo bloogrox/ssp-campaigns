@@ -246,8 +246,8 @@ class SyncerService:
         total_count = self.subscriber_remote_storage_service.get_total_count()
         print(f"SyncerService.run: total count is {total_count}")
         for page_number in range((total_count // 1000) + 1):
-            pages_count = (self.syncer_page_processor_service.process_page
-                           .call_async(1000, page_number))
+            (self.syncer_page_processor_service.process_page
+             .call_async(1000, page_number))
 
 
 class SyncerPageProcessorService:
@@ -265,7 +265,8 @@ class SyncerPageProcessorService:
         print("SyncerService.process_page: "
               f"page {page_number} loaded")
         for subscriber in subscribers:
-            self.syncer_subscriber_persister_service.persist.call_async(subscriber)
+            (self.syncer_subscriber_persister_service.persist
+             .call_async(subscriber))
 
 
 class SyncerSubscriberPersisterService:
@@ -277,10 +278,10 @@ class SyncerSubscriberPersisterService:
     def persist(self, subscriber):
         reader = geolite2.reader()
         ip_info = reader.get(subscriber["ip_address"])
-        
+
         alpha_2 = ip_info["country"]["iso_code"]
         alpha_3 = pycountry.countries.get(alpha_2=alpha_2).alpha_3
-        
+
         subscriber["timezone"] = ip_info["location"]["time_zone"]
         subscriber["country"] = alpha_3
 
