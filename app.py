@@ -142,6 +142,9 @@ class CampaignProcessorService:
         filters = {"country_code": {"$not": {"$in": country_blacklist}}}
         limit = 1
         subscribers = self.subscriber_service.get_subscribers(filters, limit)
+        if not subscribers:
+            print("CampaignProcessorService.process_campaign: "
+                  f"no subscribers found for campaign: {payload}")
         for subscriber in subscribers:
             (self.subscriber_processor_service.process_subscriber
              .call_async(subscriber))
