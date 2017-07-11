@@ -16,6 +16,7 @@ import settings
 REDIS_POOL = redis.ConnectionPool.from_url(settings.REDIS_URI)
 
 mongo_client = pymongo.MongoClient(settings.MONGO_URI)
+mongo_database = mongo_client.get_database(mongo_client.database_names()[0])
 
 # 'amqp://guest:guest@localhost:5672/
 pika_params = pika.URLParameters(
@@ -100,20 +101,18 @@ class SubscriberService:
     @rpc
     def get_subscribers(self, filters, limit):
         print("SubscriberService.get_subscribers: getting subscribers")
-        db = mongo_client.db
         pipeline = [
             # {"country_code": {"$not": {"$in": ["USA"]}}}
             {"$match": filters},
             {"$sample": {"size": limit}}
         ]
-        return list(db.subscribers.aggregate(pipeline))
+        return list(mongo_database.subscribers.aggregate(pipeline))
 
     @rpc
     def update_subscriber(self, document):
         print("SubscriberService.update_subscriber: starting update")
-        db = mongo_client.db
         try:
-            (db.subscribers
+            (mongo_database.subscribers
              .replace_one({"_id": document["_id"]}, document, upsert=True))
             print("SubscriberService.update_subscriber: "
                   "replace_one done successfully for " + document["_id"])
