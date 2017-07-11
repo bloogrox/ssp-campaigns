@@ -215,6 +215,11 @@ class Timer:
         print("tick")
         self.campaigns_runner_service.run.call_async()
 
+    @timer(interval=86400)
+    def run_syncer(self):
+        print("run syncer")
+        self.syncer_service.run.call_async()
+
 
 class SubscriberRemoteStorageService:
     name = "subscriber_remote_storage_service"
