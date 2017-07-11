@@ -9,5 +9,5 @@ subscriber_processor_service: nameko run --config nameko.yml app:SubscriberProce
 subscriber_remote_storage_service: nameko run --config nameko.yml app:SubscriberRemoteStorageService
 syncer_service: nameko run --config nameko.yml app:SyncerService
 syncer_page_processor_service: nameko run --config nameko.yml app:SyncerPageProcessorService
-syncer_subscriber_persister_service: nameko run --config nameko.yml app:SyncerSubscriberPersisterService
+syncer_subscriber_augmentor_service: nameko run --config nameko.yml app:SyncerSubscriberAugmentorService
 timer: nameko run --config nameko.yml app:Timer

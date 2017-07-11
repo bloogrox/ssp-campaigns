@@ -110,9 +110,16 @@ class SubscriberService:
 
     @rpc
     def update_subscriber(self, document):
+        print("SubscriberService.update_subscriber: starting update")
         db = mongo_client.db
-        (db.subscribers
-         .replace_one({"_id": document["_id"]}, document, upsert=True))
+        try:
+            (db.subscribers
+             .replace_one({"_id": document["_id"]}, document, upsert=True))
+            print("SubscriberService.update_subscriber: "
+                  "replace_one done successfully for " + document["_id"])
+        except Exception as e:
+            print("SubscriberService.update_subscriber: "
+                  "Exception " + str(e))
 
 
 class CampaignProcessorService:
@@ -270,8 +277,8 @@ class SyncerService:
 class SyncerPageProcessorService:
     name = "syncer_page_processor_service"
 
-    syncer_subscriber_persister_service = (
-        RpcProxy("syncer_subscriber_persister_service"))
+    syncer_subscriber_augmentor_service = (
+        RpcProxy("syncer_subscriber_augmentor_service"))
     subscriber_remote_storage_service = (
         RpcProxy("subscriber_remote_storage_service"))
 
@@ -282,17 +289,17 @@ class SyncerPageProcessorService:
         print("SyncerService.process_page: "
               f"page {page_number} loaded")
         for subscriber in subscribers:
-            (self.syncer_subscriber_persister_service.persist
+            (self.syncer_subscriber_augmentor_service.augment
              .call_async(subscriber))
 
 
-class SyncerSubscriberPersisterService:
-    name = "syncer_subscriber_persister_service"
+class SyncerSubscriberAugmentorService:
+    name = "syncer_subscriber_augmentor_service"
 
     subscriber_service = RpcProxy("subscriber_service")
 
     @rpc
-    def persist(self, subscriber):
+    def augment(self, subscriber):
         reader = geolite2.reader()
         ip_info = reader.get(subscriber["ip_address"])
 
@@ -304,5 +311,5 @@ class SyncerSubscriberPersisterService:
 
         self.subscriber_service.update_subscriber.call_async(subscriber)
 
-        print("SyncerSubscriberPersisterService.persist: "
-              "successfully persisted " + subscriber["_id"])
+        print("SyncerSubscriberAugmentorService.augment: "
+              "successfully augmented " + subscriber["_id"])
