@@ -64,7 +64,7 @@ class CampaignsRunnerService:
 
     @rpc
     def run(self):
-        campaigns = self.campaign_service.get_campaigns()
+        # campaigns = self.campaign_service.get_campaigns()
         for campaign in campaigns:
             print(f"CampaignsRunnerService.run: sending campaign: {campaign}"
                   " for processing.")
@@ -89,8 +89,8 @@ class StatsService:
     @rpc
     def get_pushes_total_count(self, campaign_id):
         # @todo #1:30min perform a call to Druid
-        print(f"StatsService.get_pushes_total_count: "
-              "get total pushes count for the campaign {campaign_id}")
+        print("StatsService.get_pushes_total_count: "
+              f"get total pushes count for the campaign {campaign_id}")
 
 
 class SubscriberService:
