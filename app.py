@@ -16,7 +16,7 @@ import settings
 REDIS_POOL = redis.ConnectionPool.from_url(settings.REDIS_URI)
 
 mongo_client = pymongo.MongoClient(settings.MONGO_URI)
-mongo_database = mongo_client.get_database(mongo_client.database_names()[0])
+mongo_database = mongo_client.get_default_database()
 
 # 'amqp://guest:guest@localhost:5672/
 pika_params = pika.URLParameters(
