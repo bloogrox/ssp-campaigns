@@ -106,11 +106,13 @@ class SubscriberService:
             {"$match": filters},
             {"$sample": {"size": limit}}
         ]
-        return list(mongo_database.subscribers.aggregate(pipeline))
+        try:
+            return list(mongo_database.subscribers.aggregate(pipeline))
+        except Exception as e:
+            print("SubscriberService.get_subscribers: Exception " + str(e))
 
     @rpc
     def update_subscriber(self, document):
-        print("SubscriberService.update_subscriber: starting update")
         try:
             (mongo_database.subscribers
              .replace_one({"_id": document["_id"]}, document, upsert=True))
@@ -151,12 +153,14 @@ class CampaignProcessorService:
         subscribers = self.subscriber_service.get_subscribers(filters, limit)
         if not subscribers:
             print("CampaignProcessorService.process_campaign: "
-                  f"no subscribers found for campaign: {payload}")
+                  f"no subscribers found for campaign: #{payload['id']}")
+            return
         for subscriber in subscribers:
             (self.subscriber_processor_service.process_subscriber
              .call_async(subscriber))
         print("CampaignProcessorService.process_campaign: "
-              f"campaign: {payload} - processed")
+              f"for campaign #{payload['id']} "
+              f"processed {len(subscribers)} subscribers")
 
 
 class Queue:
@@ -165,15 +169,18 @@ class Queue:
     @rpc
     def publish(self, payload):
         with rmq_pool.acquire() as cxn:
-            cxn.channel.basic_publish(
-                body=json.dumps(payload),
-                exchange='',
-                routing_key='sell-imp',
-                properties=pika.BasicProperties(
-                    content_type='plain/text'
+            try:
+                cxn.channel.basic_publish(
+                    body=json.dumps(payload),
+                    exchange='',
+                    routing_key='sell-imp',
+                    properties=pika.BasicProperties(
+                        content_type='plain/text'
+                    )
                 )
-            )
-        print(f"Queue.publish: published: {payload}")
+                print(f"Queue.publish published: {payload['_id']}")
+            except Exception as e:
+                print(f"Queue.publish exception: {e}")
 
 
 class CounterService:
