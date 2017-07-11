@@ -1,4 +1,3 @@
-import os
 import json
 import redis
 import pymongo
@@ -11,14 +10,16 @@ import pycountry
 from nameko.rpc import rpc, RpcProxy
 from nameko.timer import timer
 
+import settings
 
-REDIS_POOL = redis.ConnectionPool.from_url(os.environ["REDISCLOUD_URL"])
 
-mongo_client = pymongo.MongoClient(os.environ["MONGOHQ_URL"])
+REDIS_POOL = redis.ConnectionPool.from_url(settings.REDIS_URI)
+
+mongo_client = pymongo.MongoClient(settings.MONGO_URI)
 
 # 'amqp://guest:guest@localhost:5672/
 pika_params = pika.URLParameters(
-    os.environ["X_RABBITMQ_BIGWIG_URL"] + '?'
+    settings.EXT_AMQP_URI + '?'
     'socket_timeout=10&'
     'connection_attempts=2'
 )
@@ -226,8 +227,8 @@ class SubscriberRemoteStorageService:
         url = f"{self.base_url}subscribers"
         params = {"per_page": 1}
         headers = {
-            "X-Auth-Token": os.environ["PUSHW_AUTH_TOKEN"],
-            "X-Auth-Key": os.environ["PUSHW_AUTH_KEY"]
+            "X-Auth-Token": settings.PUSHW_AUTH_TOKEN,
+            "X-Auth-Key": settings.PUSHW_AUTH_KEY
         }
         resp = requests.get(url, params=params, headers=headers)
         return resp.json()["total_count"]
@@ -239,8 +240,8 @@ class SubscriberRemoteStorageService:
             "per_page": per_page,
             "pgno": page_number}
         headers = {
-            "X-Auth-Token": os.environ["PUSHW_AUTH_TOKEN"],
-            "X-Auth-Key": os.environ["PUSHW_AUTH_KEY"]
+            "X-Auth-Token": settings.PUSHW_AUTH_TOKEN,
+            "X-Auth-Key": settings.PUSHW_AUTH_KEY
         }
         resp = requests.get(url, params=params, headers=headers)
         return resp.json()["lines"]

@@ -84,6 +84,7 @@ celerybeat-schedule
 env/
 venv/
 ENV/
+.env*
 
 # Spyder project settings
 .spyderproject
@@ -104,3 +105,5 @@ ENV/
 # Docker Compose
 volumes
 
+# Project settings
+settings/local.py
