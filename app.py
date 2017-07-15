@@ -148,7 +148,7 @@ class CampaignProcessorService:
 
         # @todo #1:15min send targetings data to receive needed auditory
 
-        filters = {"country_code": {"$not": {"$in": country_blacklist}}}
+        filters = {"country": {"$not": {"$in": country_blacklist}}}
         limit = 1
         subscribers = self.subscriber_service.get_subscribers(filters, limit)
         if not subscribers:
