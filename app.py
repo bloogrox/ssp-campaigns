@@ -1,4 +1,3 @@
-import json
 import redis
 import pymongo
 import pika
@@ -6,9 +5,10 @@ import pika_pool
 import requests
 from geolite2 import geolite2
 import pycountry
-
+import json
 from nameko.rpc import rpc, RpcProxy
 from nameko.timer import timer
+from elasticsearch import Elasticsearch
 
 import settings
 
@@ -17,6 +17,7 @@ REDIS_POOL = redis.ConnectionPool.from_url(settings.REDIS_URI)
 
 mongo_client = pymongo.MongoClient(settings.MONGO_URI)
 mongo_database = mongo_client.get_default_database()
+es = Elasticsearch([settings.ELASTIC_URI])
 
 # 'amqp://guest:guest@localhost:5672/
 pika_params = pika.URLParameters(
@@ -103,6 +104,10 @@ class SubscriberService:
         print("SubscriberService.get_subscribers: getting subscribers")
         pipeline = [
             # {"country_code": {"$not": {"$in": ["USA"]}}}
+            # {"$project": {
+            #     "_id": 0,
+            #     "uid": 1
+            # }},
             {"$match": filters},
             {"$sample": {"size": limit}}
         ]
@@ -114,10 +119,13 @@ class SubscriberService:
     @rpc
     def update_subscriber(self, document):
         try:
-            (mongo_database.subscribers
-             .replace_one({"_id": document["_id"]}, document, upsert=True))
+            sid = document['_id']
+            document.pop('_id', None)
+            es.index(index='subscribers', doc_type="post",
+                     id=sid, body=document)
             print("SubscriberService.update_subscriber: "
-                  "replace_one done successfully for " + document["_id"])
+                  "replace_one done successfully for "
+                  + document["_id"])
         except Exception as e:
             print("SubscriberService.update_subscriber: "
                   "Exception " + str(e))
