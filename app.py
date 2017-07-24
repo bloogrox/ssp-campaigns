@@ -1,4 +1,3 @@
-import json
 import redis
 import pymongo
 import pika
@@ -124,7 +123,8 @@ class SubscriberService:
             document.pop('_id', None)
             es.index(index='subscribers', doc_type="post", id=sid, body=document)
             print("SubscriberService.update_subscriber: "
-                  "replace_one done successfully for " + document["_id"])
+                  "replace_one done successfully for "
+                  + document["_id"])
         except Exception as e:
             print("SubscriberService.update_subscriber: "
                   "Exception " + str(e))
