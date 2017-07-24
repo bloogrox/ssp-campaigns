@@ -121,7 +121,8 @@ class SubscriberService:
         try:
             sid = document['_id']
             document.pop('_id', None)
-            es.index(index='subscribers', doc_type="post", id=sid, body=document)
+            es.index(index='subscribers', doc_type="post",
+                     id=sid, body=document)
             print("SubscriberService.update_subscriber: "
                   "replace_one done successfully for "
                   + document["_id"])
