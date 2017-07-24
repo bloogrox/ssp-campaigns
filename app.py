@@ -10,8 +10,6 @@ import json
 from nameko.rpc import rpc, RpcProxy
 from nameko.timer import timer
 from elasticsearch import Elasticsearch
-from elasticsearch import helpers
-
 
 import settings
 
