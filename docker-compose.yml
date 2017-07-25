@@ -25,3 +25,10 @@ MongoDB:
     - "27017:27017"
   volumes:
     - ./volumes/mongodb:/data/db
+
+ElasticSearch:
+  image: 'elasticsearch:5-alpine'
+  ports:
+    - "9200:9200"
+  volumes:
+    - ./volumes/esdata:/usr/share/elasticsearch/data
