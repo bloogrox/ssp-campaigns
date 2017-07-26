@@ -18,9 +18,12 @@
 
     docker-compose up
 
-#### Start all nameko services
+#### Start nameko services
 
-    nameko run app
+    nameko run services.timer
+
+    nameko run services.campaigns_runner
+
 
 #### Run tests
 
