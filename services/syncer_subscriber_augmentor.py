@@ -1,6 +1,11 @@
 from nameko.rpc import rpc, RpcProxy
 import pycountry
 from geolite2 import geolite2
+import pytz
+from datetime import datetime
+from tzlocal import get_localzone
+
+local = get_localzone()
 
 
 class SyncerSubscriberAugmentorService:
@@ -18,6 +23,10 @@ class SyncerSubscriberAugmentorService:
 
         subscriber["timezone"] = ip_info["location"]["time_zone"]
         subscriber["country"] = alpha_3
+        sub_tz = pytz.timezone(subscriber["timezone"])
+        local_h = datetime.now(local).hour
+        sub_h = datetime.now(sub_tz).hour
+        subscriber["timezone-offset"] = sub_h - local_h
 
         self.subscriber_service.update_subscriber.call_async(subscriber)
 
