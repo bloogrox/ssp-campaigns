@@ -24,6 +24,9 @@
 
     nameko run services.campaigns_runner
 
+and etc.
+
+Please read the docs for [nameko](https://nameko.readthedocs.io/en/stable/cli.html#running-a-service)
 
 #### Run tests
 
