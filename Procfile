@@ -1,13 +1,10 @@
-campaigns_runner_service: nameko run --config nameko.yml app:CampaignsRunnerService
-campaign_service: nameko run --config nameko.yml app:CampaignService
-stats_service: nameko run --config nameko.yml app:StatsService
-subscriber_service: nameko run --config nameko.yml app:SubscriberService
-campaign_processor_service: nameko run --config nameko.yml app:CampaignProcessorService
-queue: nameko run --config nameko.yml app:Queue
-counter_service: nameko run --config nameko.yml app:CounterService
-subscriber_processor_service: nameko run --config nameko.yml app:SubscriberProcessorService
-subscriber_remote_storage_service: nameko run --config nameko.yml app:SubscriberRemoteStorageService
-syncer_service: nameko run --config nameko.yml app:SyncerService
-syncer_page_processor_service: nameko run --config nameko.yml app:SyncerPageProcessorService
-syncer_subscriber_augmentor_service: nameko run --config nameko.yml app:SyncerSubscriberAugmentorService
-timer: nameko run --config nameko.yml app:Timer
+campaigns_runner_service: nameko run --config nameko.yml services.campaigns_runner:CampaignsRunnerService
+campaign_service: nameko run --config nameko.yml services.campaign:CampaignService
+stats_service: nameko run --config nameko.yml services.stats:StatsService
+subscriber_service: nameko run --config nameko.yml services.subscriber:SubscriberService
+campaign_processor_service: nameko run --config nameko.yml services.campaign_processor:CampaignProcessorService
+queue: nameko run --config nameko.yml services.queue:Queue
+counter_service: nameko run --config nameko.yml services.counter:CounterService
+subscriber_processor_service: nameko run --config nameko.yml services.subscriber_processor:SubscriberProcessorService
+timer: nameko run --config nameko.yml services.timer:Timer
+start_syncer: bin/start_syncer.sh

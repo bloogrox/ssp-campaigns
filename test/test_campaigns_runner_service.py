@@ -1,7 +1,7 @@
-# from nameko.rpc import RpcProxy, rpc
 from nameko.testing.services import worker_factory
 
-from app import CampaignsRunnerService, CounterService
+from services.campaigns_runner import CampaignsRunnerService
+from services.counter import CounterService
 
 
 def test_campaigns_runner_service():
