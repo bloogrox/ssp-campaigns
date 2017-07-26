@@ -14,11 +14,3 @@ class StatsService:
         print("StatsService.get_pushes_total_count: "
               f"get total pushes count for the campaign {campaign_id}")
         return value
-
-    @rpc
-    def get_pushes_daily_count(self, campaign_id):
-        client = redis.Redis(connection_pool=REDIS_POOL)
-        value = client.get(f"stats:campaign:{campaign_id}:date:{date.today().isoformat()}")
-        print("StatsService.get_pushes_daily_count: "
-              f"get total pushes count for the campaign {campaign_id}")
-        return value
