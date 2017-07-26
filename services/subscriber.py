@@ -1,5 +1,4 @@
 from nameko.rpc import rpc
-from app import mongo_database
 from app import es
 
 
@@ -7,19 +6,36 @@ class SubscriberService:
     name = "subscriber_service"
 
     @rpc
-    def get_subscribers(self, filters, limit):
+    def get_subscribers(self, country_blacklist, limit):
         print("SubscriberService.get_subscribers: getting subscribers")
-        pipeline = [
-            # {"country_code": {"$not": {"$in": ["USA"]}}}
-            # {"$project": {
-            #     "_id": 0,
-            #     "uid": 1
-            # }},
-            {"$match": filters},
-            {"$sample": {"size": limit}}
-        ]
         try:
-            return list(mongo_database.subscribers.aggregate(pipeline))
+            country_filter = []
+            for c in country_blacklist:
+                country_filter.append({
+                    "match": {
+                        "country": c
+                    }
+                })
+            res = es.msearch(body=[{"index": "subscribers"},
+                                   {"size": limit,
+                                    "query": {
+                                        "function_score": {
+                                            "query": {
+                                                "bool": {
+                                                    "must_not": country_filter
+                                                }
+                                            },
+                                            "functions": [
+                                                {
+                                                    "random_score": {}
+                                                }
+                                            ]
+
+                                        }
+                                    }
+                                    }
+                                   ])
+            return res['responses'][0]['hits']['hits']
         except Exception as e:
             print("SubscriberService.get_subscribers: Exception " + str(e))
 

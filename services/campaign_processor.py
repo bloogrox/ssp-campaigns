@@ -27,9 +27,9 @@ class CampaignProcessorService:
 
         # @todo #1:15min send targetings data to receive needed auditory
 
-        filters = {"country": {"$not": {"$in": country_blacklist}}}
         limit = 1
-        subscribers = self.subscriber_service.get_subscribers(filters, limit)
+        subscribers = self.subscriber_service.get_subscribers(
+            country_blacklist, limit)
         if not subscribers:
             print("CampaignProcessorService.process_campaign: "
                   f"no subscribers found for campaign: #{payload['id']}")
