@@ -8,7 +8,7 @@ class Timer:
     campaigns_runner_service = RpcProxy("campaigns_runner_service")
     syncer_service = RpcProxy("syncer_service")
 
-    @timer(interval=5)
+    @timer(interval=1)
     def run_campaigns(self):
         print("tick")
         self.campaigns_runner_service.run.call_async()
