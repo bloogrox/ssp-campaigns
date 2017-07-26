@@ -10,10 +10,10 @@ class SubscriberService:
         print("SubscriberService.get_subscribers: getting subscribers")
         try:
             country_filter = []
-            for c in country_blacklist:
+            for country in country_blacklist:
                 country_filter.append({
                     "match": {
-                        "country": c
+                        "country": country
                     }
                 })
             res = es.msearch(body=[{"index": "subscribers"},
@@ -35,7 +35,12 @@ class SubscriberService:
                                     }
                                     }
                                    ])
-            return res['responses'][0]['hits']['hits']
+            subscribers = []
+            for row in res['responses'][0]['hits']['hits']:
+                subscriber = row['_source']
+                subscriber['_id'] = row['_id']
+                subscribers.append(subscriber)
+            return subscribers
         except Exception as e:
             print("SubscriberService.get_subscribers: Exception " + str(e))
 
