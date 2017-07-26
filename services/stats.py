@@ -16,6 +16,8 @@ class StatsService:
         print("StatsService.get_pushes_total_count: "
               f"get total pushes count "
               f"for the campaign {campaign_id}")
+        if value is None:
+            return 0
         return value
 
     @rpc
