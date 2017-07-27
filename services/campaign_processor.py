@@ -18,7 +18,7 @@ class CampaignProcessorService:
         # @todo #1:15min daily count check
 
         total_limit = payload['total_limit']
-        total_count = self.stats_service.get_pushes_total_count()
+        total_count = self.stats_service.get_pushes_total_count(payload["id"])
         # daily_count = self.stats_service.get_pushes_daily_count()
 
         # targetings = payload["targetings"]
@@ -30,8 +30,8 @@ class CampaignProcessorService:
         # @todo #1:15min send targetings data to receive needed auditory
 
         limit = 1
-        subscribers = self.subscriber_service.get_subscribers(
-            country_whitelist, limit)
+        subscribers = (self.subscriber_service
+                       .get_subscribers(country_whitelist, limit))
         if not subscribers:
             print("CampaignProcessorService.process_campaign: "
                   f"no subscribers found for campaign: #{payload['id']}")
