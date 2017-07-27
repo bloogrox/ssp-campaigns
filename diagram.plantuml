@@ -10,6 +10,7 @@ queue "queue: push sent" as push_sent
 rectangle "worker: process campaign" as camp_proc
 rectangle "worker: run campaigns" as camp_run
 rectangle "worker: process subscriber" as sub_proc
+rectangle syncer
 database postgresql as pg
 database elasticsearch as es
 database redis
@@ -20,31 +21,34 @@ rectangle "worker: update counters" as counter
 rectangle "worker: notify win" as win
 usecase push_api
 usecase timer
+usecase "external subscriber storage" as ext_sub_stor
 actor User
 rectangle cabinet
 
-timer -> camp_run
-User -up-> cabinet
-cabinet -up-> pg
+User -up-> cabinet: setup campaigns
+cabinet -up-> pg: campaigns data
+ext_sub_stor -up-> syncer: pull subscribers
+syncer -up-> es: push subscribers
+timer -> camp_run: run service periodically
 pg -up-> camp_run: get campaigns
-camp_run -> campaigns
-campaigns -> camp_proc
+camp_run -> campaigns: campaign
+campaigns -> camp_proc: campaign
 es -up-> camp_proc: get subscribers
 redis -up-> camp_proc: get counters
-camp_proc -> subscribers
-subscribers -> sub_proc
+camp_proc -> subscribers: subscriber
+subscribers -> sub_proc: sibscriber
 redis -up-> sub_proc: get counters
-sub_proc -> sell_sub
-sell_sub -> x
+sub_proc -> sell_sub: subscriber
+sell_sub -> x: subscriber
 x -up-> dsp: bid request
 dsp -down-> x: bid response
-x -> auc_fin
-auc_fin -> send_push
-auc_fin -> win
-counter ---> redis
-win -up-> dsp: notify win
-send_push -up-> push_api
-send_push -> push_sent
+x -> auc_fin: data with bidresponse
+auc_fin -> send_push: data with bidresponse
+auc_fin -> win: notify about win in auction
+counter ---> redis: increment daily push count for subscriber
+win -up-> dsp
+send_push -up-> push_api: message for web push
+send_push -> push_sent: message for web push
 push_sent -down-> counter
 
 @enduml
