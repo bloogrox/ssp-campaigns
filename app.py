@@ -35,6 +35,7 @@ country_blacklist = ["VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX",
                      "MYS", "MAR", "HUN", "ESP", "ITA", "PAK", "TUR", "TWN",
                      "CHL", "GEO", "PER", "CZE", "AZE", "SRB", "KAZ"]
 
+country_whitelist = ["AZE"]
 
 campaigns = [
     {

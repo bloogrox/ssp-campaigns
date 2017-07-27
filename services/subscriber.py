@@ -6,11 +6,11 @@ class SubscriberService:
     name = "subscriber_service"
 
     @rpc
-    def get_subscribers(self, country_blacklist, limit):
+    def get_subscribers(self, countries, limit):
         print("SubscriberService.get_subscribers: getting subscribers")
         try:
             country_filter = []
-            for country in country_blacklist:
+            for country in countries:
                 country_filter.append({
                     "match": {
                         "country": country
@@ -22,7 +22,7 @@ class SubscriberService:
                                         "function_score": {
                                             "query": {
                                                 "bool": {
-                                                    "must_not": country_filter
+                                                    "should": country_filter
                                                 }
                                             },
                                             "functions": [

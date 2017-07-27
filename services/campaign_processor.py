@@ -1,5 +1,5 @@
 from nameko.rpc import rpc, RpcProxy
-from app import country_blacklist
+from app import country_whitelist
 
 
 class CampaignProcessorService:
@@ -31,7 +31,7 @@ class CampaignProcessorService:
 
         limit = 1
         subscribers = self.subscriber_service.get_subscribers(
-            country_blacklist, limit)
+            country_whitelist, limit)
         if not subscribers:
             print("CampaignProcessorService.process_campaign: "
                   f"no subscribers found for campaign: #{payload['id']}")
