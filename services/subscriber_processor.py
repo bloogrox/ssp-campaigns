@@ -13,8 +13,8 @@ class SubscriberProcessorService:
         # @todo #11:30min filter user by timezone
         print("SubscriberProcessorService.process_subscriber: "
               f"processing subscriber: {payload}")
-        if self.counter_service.get_pushes_count("token") \
-                <= settings.LIMIT_PER_USER:
+        limit = settings.LIMIT_PER_USER
+        if self.counter_service.get_pushes_count(payload["_id"]) <= limit:
             self.queue.publish.call_async(payload)
         else:
             print("SubscriberProcessorService.process_subscriber: "
