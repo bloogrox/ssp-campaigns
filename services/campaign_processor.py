@@ -22,7 +22,7 @@ class CampaignProcessorService:
         daily_count = self.stats_service.get_pushes_daily_count()
 
         # targetings = payload["targetings"]
-        if total_count >= total_limit or total_count >= daily_count:
+        if total_count >= total_limit or daily_count >= total_limit:
             print("CampaignProcessorService.process_campaign: "
                   f"campaign limit exceeded: {payload}")
             return None
