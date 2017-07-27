@@ -25,18 +25,18 @@ usecase "external subscriber storage" as ext_sub_stor
 actor User
 rectangle cabinet
 
+timer -> camp_run: run service periodically
 User -up-> cabinet: setup campaigns
 cabinet -up-> pg: campaigns data
 ext_sub_stor -up-> syncer: pull subscribers
 syncer -up-> es: push subscribers
-timer -> camp_run: run service periodically
 pg -up-> camp_run: get campaigns
 camp_run -> campaigns: campaign
 campaigns -> camp_proc: campaign
 es -up-> camp_proc: get subscribers
 redis -up-> camp_proc: get counters
 camp_proc -> subscribers: subscriber
-subscribers -> sub_proc: sibscriber
+subscribers -> sub_proc: subscriber
 redis -up-> sub_proc: get counters
 sub_proc -> sell_sub: subscriber
 sell_sub -> x: subscriber
