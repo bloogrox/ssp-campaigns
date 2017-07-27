@@ -1,0 +1,50 @@
+@startuml
+
+left to right direction
+
+queue "queue: campaigns" as campaigns
+queue "queue: subscribers" as subscribers
+queue "queue: sell subscriber" as sell_sub
+queue "queue: auction finished" as auc_fin
+queue "queue: push sent" as push_sent
+rectangle "worker: process campaign" as camp_proc
+rectangle "worker: run campaigns" as camp_run
+rectangle "worker: process subscriber" as sub_proc
+database postgresql as pg
+database elasticsearch as es
+database redis
+rectangle "worker: exchange" as x
+usecase dsp
+rectangle "worker: send push" as send_push
+rectangle "worker: update counters" as counter
+rectangle "worker: notify win" as win
+usecase push_api
+usecase timer
+actor User
+rectangle cabinet
+
+timer -> camp_run
+User -up-> cabinet
+cabinet -up-> pg
+pg -up-> camp_run: get campaigns
+camp_run -> campaigns
+campaigns -> camp_proc
+es -up-> camp_proc: get subscribers
+redis -up-> camp_proc: get counters
+camp_proc -> subscribers
+subscribers -> sub_proc
+redis -up-> sub_proc: get counters
+sub_proc -> sell_sub
+sell_sub -> x
+x -up-> dsp: bid request
+dsp -down-> x: bid response
+x -> auc_fin
+auc_fin -> send_push
+auc_fin -> win
+counter ---> redis
+win -up-> dsp: notify win
+send_push -up-> push_api
+send_push -> push_sent
+push_sent -down-> counter
+
+@enduml
