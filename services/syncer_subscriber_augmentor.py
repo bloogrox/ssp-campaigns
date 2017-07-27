@@ -24,10 +24,8 @@ class SyncerSubscriberAugmentorService:
         subscriber["timezone"] = ip_info["location"]["time_zone"]
         subscriber["country"] = alpha_3
         sub_tz = pytz.timezone(subscriber["timezone"])
-        local_h = datetime.now(local).hour
-        sub_h = datetime.now(sub_tz).hour
-        subscriber["timezone-offset"] = sub_h - local_h
-
+        subscriber["timezone-offset"] = (datetime.datetime.now(sub_tz)
+                                         .utcoffset().seconds // 3600)
         self.subscriber_service.update_subscriber.call_async(subscriber)
 
         print("SyncerSubscriberAugmentorService.augment: "
