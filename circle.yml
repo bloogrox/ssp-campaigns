@@ -10,7 +10,6 @@ machine:
   environment:
     ENV_TYPE: ci
     REDIS_URI: redis://localhost:6379
-    MONGO_URI: mongodb://127.0.0.1:27017/db
     AMQP_URI: "amqp://guest:guest@127.0.0.1/"
     EXT_AMQP_URI: "amqp://guest:guest@127.0.0.1/"
     ELASTIC_URI: "http://127.0.0.1:9200/"

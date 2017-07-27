@@ -26,7 +26,6 @@ pycodestyle==2.3.1
 pycountry==17.5.14
 pyflakes==1.5.0
 pylint==1.7.2
-pymongo==3.4.0
 pytest==3.1.3
 pytz==2017.2
 PyYAML==3.12

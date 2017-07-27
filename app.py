@@ -1,5 +1,4 @@
 import redis
-import pymongo
 import pika
 import pika_pool
 from elasticsearch import Elasticsearch
@@ -9,8 +8,6 @@ import settings
 
 REDIS_POOL = redis.ConnectionPool.from_url(settings.REDIS_URI)
 
-mongo_client = pymongo.MongoClient(settings.MONGO_URI)
-mongo_database = mongo_client.get_default_database()
 es = Elasticsearch([settings.ELASTIC_URI])
 
 # 'amqp://guest:guest@localhost:5672/
