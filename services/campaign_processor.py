@@ -17,13 +17,15 @@ class CampaignProcessorService:
               f"processing campaign - {payload}")
         # @todo #1:15min daily count check
 
-        # total_limit = payload['total_limit']
-        # total_count = self.stats_service.get_pushes_total_count()
+        total_limit = payload['total_limit']
+        total_count = self.stats_service.get_pushes_total_count()
+        # daily_count = self.stats_service.get_pushes_daily_count()
+
         # targetings = payload["targetings"]
-        # if total_count >= total_limit:
-        #     print("CampaignProcessorService.process_campaign: "
-        #           f"campaign limit exceeded: {payload}")
-        #     return None
+        if total_count >= total_limit:
+            print("CampaignProcessorService.process_campaign: "
+                  f"campaign limit exceeded: {payload}")
+            return None
 
         # @todo #1:15min send targetings data to receive needed auditory
 
