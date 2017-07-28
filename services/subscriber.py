@@ -22,11 +22,11 @@ class SubscriberService:
 
             timezone_filter = []
             if time_stamp:
-                timezones = [tz for tz in pytz.all_timezones 
-                if (datetime.utcnow() + timedelta(
-                    hours = (datetime.now(
-                    pytz.timezone(tz)).utcoffset().total_seconds() / 3600)))
-                    .strftime('%H') == time_stamp]
+                timezones = [tz for tz in pytz.all_timezones if (
+                    datetime.utcnow() + timedelta(hours=(datetime.now(
+                        pytz.timezone(tz)).utcoffset().total_seconds()/3600)
+                    )).strftime('%H') == time_stamp]
+
                 for timezone in timezones:
                     timezone_filter.append({
                         "match_phrase": {
