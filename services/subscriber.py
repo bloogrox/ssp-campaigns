@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+import pytz
+
 from nameko.rpc import rpc
 from app import es
 
@@ -6,7 +9,7 @@ class SubscriberService:
     name = "subscriber_service"
 
     @rpc
-    def get_subscribers(self, countries, limit):
+    def get_subscribers(self, countries, time_stamp, limit):
         print("SubscriberService.get_subscribers: getting subscribers")
         try:
             country_filter = []
@@ -16,13 +19,32 @@ class SubscriberService:
                         "country": country
                     }
                 })
+
+            timezone_filter = []
+            if time_stamp:
+                timezones = [tz for tz in pytz.all_timezones 
+                if (datetime.utcnow() + timedelta(
+                    hours = (datetime.now(
+                    pytz.timezone(tz)).utcoffset().total_seconds() / 3600)))
+                    .strftime('%H') == time_stamp]
+                for timezone in timezones:
+                    timezone_filter.append({
+                        "match_phrase": {
+                            "timezone": timezone
+                        }
+                    })
             res = es.msearch(body=[{"index": "subscribers"},
                                    {"size": limit,
                                     "query": {
                                         "function_score": {
                                             "query": {
                                                 "bool": {
-                                                    "should": country_filter
+                                                    "should": country_filter,
+                                                    "filter": {
+                                                        "bool": {
+                                                            "should": timezone_filter
+                                                        }
+                                                    }
                                                 }
                                             },
                                             "functions": [
