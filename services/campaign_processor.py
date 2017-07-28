@@ -1,5 +1,5 @@
 from nameko.rpc import rpc, RpcProxy
-from app import country_whitelist
+from app import country_whitelist, hours_whitelist
 
 
 class CampaignProcessorService:
@@ -30,9 +30,13 @@ class CampaignProcessorService:
         # @todo #1:15min send targetings data to receive needed auditory
 
         limit = 1
-        subscribers = (self.subscriber_service
-                       .get_subscribers(country_whitelist, limit))
+        subscribers = (self.subscriber_service.get_subscribers(
+            country_whitelist,
+            hours_whitelist,
+            limit
+        ))
         if not subscribers:
+
             print("CampaignProcessorService.process_campaign: "
                   f"no subscribers found for campaign: #{payload['id']}")
             return
