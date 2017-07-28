@@ -1,3 +1,6 @@
+from datetime import datetime
+import pytz
+
 from nameko.rpc import rpc
 from app import es
 
@@ -6,7 +9,7 @@ class SubscriberService:
     name = "subscriber_service"
 
     @rpc
-    def get_subscribers(self, countries, limit):
+    def get_subscribers(self, countries, hours_whitelist, limit):
         print("SubscriberService.get_subscribers: getting subscribers")
         try:
             country_filter = []
@@ -16,25 +19,42 @@ class SubscriberService:
                         "country": country
                     }
                 })
-            res = es.msearch(body=[{"index": "subscribers"},
-                                   {"size": limit,
-                                    "query": {
-                                        "function_score": {
-                                            "query": {
-                                                "bool": {
-                                                    "should": country_filter
-                                                }
-                                            },
-                                            "functions": [
-                                                {
-                                                    "random_score": {}
-                                                }
-                                            ]
 
-                                        }
-                                    }
-                                    }
-                                   ])
+            timezone_filter = []
+            timezones = [tz for tz in pytz.all_timezones if datetime.now(
+                pytz.timezone(tz)).hour in hours_whitelist]
+            for timezone in timezones:
+                timezone_filter.append({
+                    "match_phrase": {
+                        "timezone": timezone
+                    }
+                })
+
+            res = es.msearch(body=[
+                {"index": "subscribers"},
+                {"size": limit,
+                 "query": {
+                     "function_score": {
+                         "query": {
+                             "bool": {
+                                 "should": country_filter,
+                                 "filter": {
+                                     "bool": {
+                                         "should": timezone_filter
+                                     }
+                                 }
+                             }
+                         },
+                         "functions": [
+                             {
+                                 "random_score": {}
+                             }
+                         ]
+
+                     }
+                 }
+                 }
+            ])
             subscribers = []
             for row in res['responses'][0]['hits']['hits']:
                 subscriber = row['_source']
