@@ -10,7 +10,6 @@ class SubscriberProcessorService:
 
     @rpc
     def process_subscriber(self, payload):
-        # @todo #11:30min filter user by timezone
         print("SubscriberProcessorService.process_subscriber: "
               f"processing subscriber: {payload}")
         limit = settings.LIMIT_PER_USER
