@@ -27,8 +27,6 @@ class CampaignProcessorService:
                   f"campaign limit exceeded: {payload}")
             return None
 
-        # @todo #1:15min send targetings data to receive needed auditory
-
         limit = 1
         subscribers = (self.subscriber_service
                        .get_subscribers(country_whitelist, limit))
