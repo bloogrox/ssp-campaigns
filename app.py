@@ -27,7 +27,6 @@ rmq_pool = pika_pool.QueuedPool(
 )
 
 
-# country_whitelist = []
 country_blacklist = ["VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX",
                      "MYS", "MAR", "HUN", "ESP", "ITA", "PAK", "TUR", "TWN",
                      "CHL", "GEO", "PER", "CZE", "AZE", "SRB", "KAZ"]
