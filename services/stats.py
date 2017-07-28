@@ -9,7 +9,6 @@ class StatsService:
 
     @rpc
     def get_pushes_total_count(self, campaign_id):
-        # @todo #1:30min perform a call to Druid
         client = redis.Redis(connection_pool=REDIS_POOL)
         value = client.get(f"stats:campaign:{campaign_id}:total-count")
         print("StatsService.get_pushes_total_count: "
