@@ -10,7 +10,7 @@ class SubscriberService:
     name = "subscriber_service"
 
     @rpc
-    def get_subscribers(self, targetings, hours_whitelist, limit):
+    def get_subscribers(self, targetings, hours_whitelist, volume):
         print("SubscriberService.get_subscribers: getting subscribers")
         timezones = [tz for tz in pytz.all_timezones
                      if (datetime
@@ -25,7 +25,7 @@ class SubscriberService:
             })
         try:
             s = Search(using=es, index="users")
-            s.extra(size=limit)
+            s.extra(size=volume)
             logical_operator_mappings = {
                 'OR': 'should',
                 'AND': 'must',
