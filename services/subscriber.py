@@ -39,7 +39,10 @@ class SubscriberService:
                            ): Q('terms', **{query["field"]: query["value"]})})
                 q += bool_q
             s = s.query(q)
-            s.query = dslq.FunctionScore(query=s.query, functions=[dslq.SF('random_score')])
+            s.query = dslq.FunctionScore(
+                query=s.query,
+                functions=[dslq.SF('random_score')]
+                )
             res = s.execute()
             subscribers = []
             for row in res.hits:
