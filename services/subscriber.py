@@ -2,7 +2,7 @@ from datetime import datetime
 import pytz
 
 from nameko.rpc import rpc
-from elasticsearch_dsl import Search, Q
+from elasticsearch_dsl import Search, Q, query as dslq
 from app import es
 
 
@@ -24,13 +24,11 @@ class SubscriberService:
                 "value": timezones
             })
         try:
-            s = Search(using=es, index="users")
-            s.extra(size=volume)
+            s = Search(using=es, index="subscribers")
+            s.extra(size=volume, boost_mode='replace')
             logical_operator_mappings = {
-                'OR': 'should',
-                'AND': 'must',
+                'IN': 'must',
                 'NOT IN': 'must_not',
-                '=': 'filter'
             }
 
             q = Q()
@@ -41,8 +39,14 @@ class SubscriberService:
                            ): Q('terms', **{query["field"]: query["value"]})})
                 q += bool_q
             s = s.query(q)
+            s.query = dslq.FunctionScore(query=s.query, functions=[dslq.SF('random_score')])
             res = s.execute()
-            return [i.to_dict() for i in res.hits]
+            subscribers = []
+            for row in res.hits:
+                subscriber = row.to_dict()
+                subscriber['_id'] = row.meta.id
+                subscribers.append(subscriber)
+            return subscribers
         except Exception as e:
             print(f"SubscriberService.get_subscribers: Exception {e}")
 
