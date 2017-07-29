@@ -1,5 +1,5 @@
 from nameko.rpc import rpc, RpcProxy
-from app import country_whitelist, hours_whitelist
+from app import hours_whitelist
 
 
 class CampaignProcessorService:
@@ -21,7 +21,7 @@ class CampaignProcessorService:
         total_count = self.stats_service.get_pushes_total_count(payload["id"])
         daily_count = self.stats_service.get_pushes_daily_count(payload["id"])
 
-        # targetings = payload["targetings"]
+        targetings = payload["targetings"]
         if total_count >= total_limit or daily_count >= total_limit:
             print("CampaignProcessorService.process_campaign: "
                   f"campaign limit exceeded: {payload}")
@@ -29,7 +29,7 @@ class CampaignProcessorService:
 
         limit = 1
         subscribers = (self.subscriber_service.get_subscribers(
-            country_whitelist,
+            targetings,
             hours_whitelist,
             limit
         ))

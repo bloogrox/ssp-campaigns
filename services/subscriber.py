@@ -2,6 +2,7 @@ from datetime import datetime
 import pytz
 
 from nameko.rpc import rpc
+from elasticsearch_dsl import Search, Q
 from app import es
 
 
@@ -9,39 +10,39 @@ class SubscriberService:
     name = "subscriber_service"
 
     @rpc
-    def get_subscribers(self, countries, hours_whitelist, limit):
+    def get_subscribers(self, targetings, hours_whitelist, limit):
         print("SubscriberService.get_subscribers: getting subscribers")
+        timezones = [tz for tz in pytz.all_timezones
+                     if (datetime
+                         .now(pytz.timezone(tz)).hour
+                         in hours_whitelist)]
+
+        if timezones:
+            targetings.append({
+                "field": "timezone",
+                "operator": "AND",
+                "value": timezones
+            })
         try:
-            timezones = [tz for tz in pytz.all_timezones
-                         if (datetime
-                             .now(pytz.timezone(tz)).hour
-                             in hours_whitelist)]
-            res = es.msearch(body=[
-                {"index": "users"},
-                {
-                    "size": limit,
-                    "query": {
-                        "function_score": {
-                            "query": {
-                                "bool": {
-                                    "must": [
-                                        {"terms": {"country": countries}},
-                                        {"terms": {"timezone": timezones}}
-                                    ]
-                                }
-                            },
-                            "random_score": {},
-                            "boost_mode": "replace"
-                        }
-                    }
-                }
-            ])
-            subscribers = []
-            for row in res['responses'][0]['hits']['hits']:
-                subscriber = row['_source']
-                subscriber['_id'] = row['_id']
-                subscribers.append(subscriber)
-            return subscribers
+            s = Search(using=es, index="users")
+            s.extra(size=limit)
+            logical_operator_mappings = {
+                'OR': 'should',
+                'AND': 'must',
+                'NOT IN': 'must_not',
+                '=': 'filter'
+            }
+
+            q = Q()
+            for query in targetings:
+                bool_q = Q('bool',
+                           **{logical_operator_mappings.get(
+                               query.get('operator')
+                           ): Q('terms', **{query["field"]: query["value"]})})
+                q += bool_q
+            s = s.query(q)
+            res = s.execute()
+            return [i.to_dict() for i in res.hits]
         except Exception as e:
             print(f"SubscriberService.get_subscribers: Exception {e}")
 
