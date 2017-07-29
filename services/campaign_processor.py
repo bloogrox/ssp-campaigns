@@ -1,6 +1,8 @@
 from nameko.rpc import rpc, RpcProxy
 from app import country_whitelist, hours_whitelist
 
+import settings
+
 
 class CampaignProcessorService:
     """Process campaign and fetch subscribers
@@ -27,11 +29,11 @@ class CampaignProcessorService:
                   f"campaign limit exceeded: {payload}")
             return None
 
-        limit = 1
+        volume = settings.BIDS_VOLUME
         subscribers = (self.subscriber_service.get_subscribers(
             country_whitelist,
             hours_whitelist,
-            limit
+            volume
         ))
         if not subscribers:
 

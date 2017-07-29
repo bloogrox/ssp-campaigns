@@ -9,7 +9,7 @@ class SubscriberService:
     name = "subscriber_service"
 
     @rpc
-    def get_subscribers(self, countries, hours_whitelist, limit):
+    def get_subscribers(self, countries, hours_whitelist, volume):
         print("SubscriberService.get_subscribers: getting subscribers")
         try:
             timezones = [tz for tz in pytz.all_timezones
@@ -19,7 +19,7 @@ class SubscriberService:
             res = es.msearch(body=[
                 {"index": "users"},
                 {
-                    "size": limit,
+                    "size": volume,
                     "query": {
                         "function_score": {
                             "query": {
