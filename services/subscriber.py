@@ -20,11 +20,11 @@ class SubscriberService:
         if timezones:
             targetings.append({
                 "field": "timezone",
-                "operator": "AND",
+                "operator": "IN",
                 "value": timezones
             })
         try:
-            s = Search(using=es, index="subscribers")
+            s = Search(using=es, index="users")
             s.extra(size=volume, boost_mode='replace')
             logical_operator_mappings = {
                 'IN': 'must',
