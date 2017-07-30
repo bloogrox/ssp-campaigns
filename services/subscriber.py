@@ -25,7 +25,6 @@ class SubscriberService:
             })
         try:
             s = Search(using=es, index="users")
-            s.extra(size=volume)
             logical_operator_mappings = {
                 'IN': 'must',
                 'NOT IN': 'must_not',
@@ -44,6 +43,7 @@ class SubscriberService:
                 functions=[dslq.SF('random_score')],
                 boost_mode="replace"
                 )
+            s = s[volume]
             res = s.execute()
             subscribers = []
             for row in res.hits:
