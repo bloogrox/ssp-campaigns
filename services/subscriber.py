@@ -25,7 +25,7 @@ class SubscriberService:
             })
         try:
             s = Search(using=es, index="users")
-            s.extra(size=volume, boost_mode='replace')
+            s.extra(size=volume)
             logical_operator_mappings = {
                 'IN': 'must',
                 'NOT IN': 'must_not',
@@ -41,7 +41,8 @@ class SubscriberService:
             s = s.query(q)
             s.query = dslq.FunctionScore(
                 query=s.query,
-                functions=[dslq.SF('random_score')]
+                functions=[dslq.SF('random_score')],
+                boost_mode="replace"
                 )
             res = s.execute()
             subscribers = []
