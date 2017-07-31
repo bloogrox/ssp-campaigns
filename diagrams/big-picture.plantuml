@@ -2,7 +2,7 @@
 
 actor User
 rectangle "SSP" as pushw
-rectangle "Advetiser DSP" as dsp
+rectangle "Advertiser DSP" as dsp
 rectangle "Site, landing page" as landing
 
 User -> pushw: "I want to receive push messages"
