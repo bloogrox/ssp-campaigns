@@ -38,7 +38,7 @@ Please read the docs for [nameko](https://nameko.readthedocs.io/en/stable/cli.ht
 
 ### Diagrams
 
-![Bid-Picture](https://g.gravizo.com/source/svg?https://raw.githubusercontent.com/bloogrox/ssp-campaigns/diagrams/master/big-picture.plantuml)
+![Big-Picture](https://g.gravizo.com/source/svg?https://raw.githubusercontent.com/bloogrox/ssp-campaigns/master/diagrams/big-picture.plantuml)
 
 
-![Services](https://g.gravizo.com/source/svg?https://raw.githubusercontent.com/bloogrox/ssp-campaigns/diagrams/master/services.plantuml)
+![Services](https://g.gravizo.com/source/svg?https://raw.githubusercontent.com/bloogrox/ssp-campaigns/master/diagrams/services.plantuml)
