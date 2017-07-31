@@ -1,0 +1,14 @@
+@startuml
+
+actor User
+rectangle "SSP" as pushw
+rectangle "Advetiser DSP" as dsp
+rectangle "Site, landing page" as landing
+
+User -> pushw: "I want to receive push messages"
+pushw -> dsp: "give me creative (text + banner) for this user"
+dsp -> pushw: "here is your creative"
+pushw -> User: "send push message"
+User --> landing: "click on push message and go to the site"
+
+@enduml

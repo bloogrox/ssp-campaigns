@@ -36,6 +36,9 @@ Please read the docs for [nameko](https://nameko.readthedocs.io/en/stable/cli.ht
 
     flake8
 
-### System Diagram
+### Diagrams
 
-![Diagram](https://g.gravizo.com/source/svg?https://raw.githubusercontent.com/bloogrox/ssp-campaigns/master/diagram.plantuml)
+![Bid-Picture](https://g.gravizo.com/source/svg?https://raw.githubusercontent.com/bloogrox/ssp-campaigns/diagrams/master/big-picture.plantuml)
+
+
+![Services](https://g.gravizo.com/source/svg?https://raw.githubusercontent.com/bloogrox/ssp-campaigns/diagrams/master/services.plantuml)
