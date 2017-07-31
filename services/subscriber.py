@@ -2,6 +2,7 @@ from datetime import datetime
 import pytz
 
 from nameko.rpc import rpc
+from elasticsearch_dsl import Search, Q, query as dslq
 from app import es
 
 
@@ -9,37 +10,45 @@ class SubscriberService:
     name = "subscriber_service"
 
     @rpc
-    def get_subscribers(self, countries, hours_whitelist, volume):
+    def get_subscribers(self, targetings, hours_whitelist, volume):
         print("SubscriberService.get_subscribers: getting subscribers")
+        timezones = [tz for tz in pytz.all_timezones
+                     if (datetime
+                         .now(pytz.timezone(tz)).hour
+                         in hours_whitelist)]
+
+        if timezones:
+            targetings.append({
+                "field": "timezone",
+                "operator": "IN",
+                "value": timezones
+            })
         try:
-            timezones = [tz for tz in pytz.all_timezones
-                         if (datetime
-                             .now(pytz.timezone(tz)).hour
-                             in hours_whitelist)]
-            res = es.msearch(body=[
-                {"index": "users"},
-                {
-                    "size": volume,
-                    "query": {
-                        "function_score": {
-                            "query": {
-                                "bool": {
-                                    "must": [
-                                        {"terms": {"country": countries}},
-                                        {"terms": {"timezone": timezones}}
-                                    ]
-                                }
-                            },
-                            "random_score": {},
-                            "boost_mode": "replace"
-                        }
-                    }
-                }
-            ])
+            s = Search(using=es, index="users")
+            logical_operator_mappings = {
+                'IN': 'must',
+                'NOT IN': 'must_not',
+            }
+
+            q = Q()
+            for query in targetings:
+                bool_q = Q('bool',
+                           **{logical_operator_mappings.get(
+                               query.get('operator')
+                           ): Q('terms', **{query["field"]: query["value"]})})
+                q += bool_q
+            s = s.query(q)
+            s.query = dslq.FunctionScore(
+                query=s.query,
+                functions=[dslq.SF('random_score')],
+                boost_mode="replace"
+                )
+            s = s[volume]
+            res = s.execute()
             subscribers = []
-            for row in res['responses'][0]['hits']['hits']:
-                subscriber = row['_source']
-                subscriber['_id'] = row['_id']
+            for row in res.hits:
+                subscriber = row.to_dict()
+                subscriber['_id'] = row.meta.id
                 subscribers.append(subscriber)
             return subscribers
         except Exception as e:

@@ -1,14 +1,14 @@
 import redis
 import pika
 import pika_pool
-from elasticsearch import Elasticsearch
 
+from elasticsearch_dsl.connections import connections
 import settings
 
 
 REDIS_POOL = redis.ConnectionPool.from_url(settings.REDIS_URI)
 
-es = Elasticsearch([settings.ELASTIC_URI])
+es = connections.create_connection(hosts=[settings.ELASTIC_URI])
 
 # 'amqp://guest:guest@localhost:5672/
 pika_params = pika.URLParameters(
