@@ -14,6 +14,10 @@
 
     cp settings/local.sample.py settings/local.py
 
+#### Setup pre-commit hook for Git
+
+    ln -s ../../pre-commit.sh .git/hooks/pre-commit
+
 #### Start databases in Docker
 
     docker-compose up
