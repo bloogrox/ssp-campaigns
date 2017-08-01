@@ -31,7 +31,7 @@ country_blacklist = ["VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX",
                      "MYS", "MAR", "HUN", "ESP", "ITA", "PAK", "TUR", "TWN",
                      "CHL", "GEO", "PER", "CZE", "AZE", "SRB", "KAZ"]
 
-country_whitelist = ["AZE", "PAK"]
+country_whitelist = ["PAK"]
 
 hours_whitelist = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
