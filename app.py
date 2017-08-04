@@ -48,5 +48,27 @@ campaigns = [
                 "value": country_whitelist
             }
         ]
+    },
+    {
+        "id": 2,
+        "dsp_id": 1,
+        "total_limit": 10000000,
+        "daily_limit": 1000000,
+        "targetings": [
+            {
+                "field": "country",
+                "operator": "IN",
+                "value": [
+                    "VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX",
+                    "ESP", "MAR", "MYS", "TWN", "PAK", "GEO", "ITA", "HUN",
+                    "TUR", "CHL", "GRC", "PER"
+                ]
+            },
+            {
+                "field": "site_id",
+                "operator": "IN",
+                "value": [28, 51, 52, 54]
+            }
+        ]
     }
 ]
