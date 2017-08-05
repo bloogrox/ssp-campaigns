@@ -25,17 +25,15 @@ class SubscriberService:
             })
         try:
             s = Search(using=es, index="users")
-            logical_operator_mappings = {
+            operator_mappings = {
                 'IN': 'must',
                 'NOT IN': 'must_not',
             }
 
             q = Q()
             for query in targetings:
-                bool_q = Q('bool',
-                           **{logical_operator_mappings.get(
-                               query.get('operator')
-                           ): Q('terms', **{query["field"]: query["values"]})})
+                terms_q = Q('terms', **{query["field"]: query["values"]})
+                bool_q = Q('bool', **{operator_mappings['IN']: terms_q})
                 q += bool_q
             s = s.query(q)
             s.query = dslq.FunctionScore(
