@@ -44,9 +44,7 @@ class SubscriberService:
                 functions=[dslq.SF('random_score')],
                 boost_mode="replace"
                 )
-            s = s[volume]
-            print("SubscriberService.get_subscribers: "
-                  f"{json.dumps(s.to_dict())}")
+            s = s[:volume]
             res = s.execute()
             subscribers = []
             for row in res.hits:
