@@ -19,16 +19,17 @@ class CampaignProcessorService:
               f"processing campaign - {payload}")
         # @todo #1:15min daily count check
 
-        total_limit = payload['total_limit']
-        total_count = self.stats_service.get_pushes_total_count(payload["id"])
-        daily_count = self.stats_service.get_pushes_daily_count(payload["id"])
+        # total_limit = payload['total_limit']
+        # total_count = (self.stats_service
+        #                .get_pushes_total_count(payload["id"]))
+        # daily_count = (self.stats_service
+        #                .get_pushes_daily_count(payload["id"]))
+        # if total_count >= total_limit or daily_count >= total_limit:
+        #     print("CampaignProcessorService.process_campaign: "
+        #           f"campaign limit exceeded: {payload}")
+        #     return None
 
         targetings = payload["targetings"]
-        if total_count >= total_limit or daily_count >= total_limit:
-            print("CampaignProcessorService.process_campaign: "
-                  f"campaign limit exceeded: {payload}")
-            return None
-
         volume = settings.BIDS_VOLUME
         subscribers = (self.subscriber_service.get_subscribers(
             targetings,
@@ -36,7 +37,6 @@ class CampaignProcessorService:
             volume
         ))
         if not subscribers:
-
             print("CampaignProcessorService.process_campaign: "
                   f"no subscribers found for campaign: #{payload['id']}")
             return

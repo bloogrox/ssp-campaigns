@@ -26,49 +26,4 @@ rmq_pool = pika_pool.QueuedPool(
     stale=45,
 )
 
-
-country_blacklist = ["VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX",
-                     "MYS", "MAR", "HUN", "ESP", "ITA", "PAK", "TUR", "TWN",
-                     "CHL", "GEO", "PER", "CZE", "AZE", "SRB", "KAZ"]
-
-country_whitelist = ["PAK"]
-
 hours_whitelist = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-
-campaigns = [
-    {
-        "id": 1,
-        "dsp_id": 1,
-        "total_limit": 100000,
-        "daily_limit": 1000,
-        "targetings": [
-            {
-                "field": "country",
-                "operator": "IN",
-                "value": country_whitelist
-            }
-        ]
-    },
-    {
-        "id": 2,
-        "dsp_id": 1,
-        "total_limit": 10000000,
-        "daily_limit": 1000000,
-        "targetings": [
-            {
-                "field": "country",
-                "operator": "IN",
-                "value": [
-                    "VNM", "IND", "IDN", "PHL", "ROU", "COL", "THA", "MEX",
-                    "ESP", "MAR", "MYS", "TWN", "PAK", "GEO", "ITA", "HUN",
-                    "TUR", "CHL", "GRC", "PER"
-                ]
-            },
-            {
-                "field": "site_id",
-                "operator": "IN",
-                "value": [28, 51, 52, 54]
-            }
-        ]
-    }
-]

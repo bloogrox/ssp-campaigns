@@ -1,5 +1,4 @@
 campaigns_runner_service: nameko run --config nameko.configs/campaigns.yml services.campaigns_runner
-campaign_service: nameko run --config nameko.configs/campaigns.yml services.campaign
 stats_service: nameko run --config nameko.configs/campaigns.yml services.stats
 subscriber_service: nameko run --config nameko.configs/campaigns.yml services.subscriber
 campaign_processor_service: nameko run --config nameko.configs/campaigns.yml services.campaign_processor
