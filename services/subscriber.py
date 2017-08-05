@@ -1,6 +1,5 @@
 from datetime import datetime
 import pytz
-import json
 
 from nameko.rpc import rpc
 from elasticsearch_dsl import Search, Q, query as dslq
