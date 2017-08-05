@@ -1,5 +1,6 @@
 from datetime import datetime
 import pytz
+import json
 
 from nameko.rpc import rpc
 from elasticsearch_dsl import Search, Q, query as dslq
@@ -44,6 +45,8 @@ class SubscriberService:
                 boost_mode="replace"
                 )
             s = s[volume]
+            print("SubscriberService.get_subscribers: "
+                  f"{json.dumps(s.to_dict())}")
             res = s.execute()
             subscribers = []
             for row in res.hits:
