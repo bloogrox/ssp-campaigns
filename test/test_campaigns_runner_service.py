@@ -4,13 +4,13 @@ from services.campaigns_runner import CampaignsRunnerService
 from services.counter import CounterService
 
 
-def test_campaigns_runner_service():
+# def test_campaigns_runner_service():
     # create worker with mock dependencies
-    service = worker_factory(CampaignsRunnerService)
+    # service = worker_factory(CampaignsRunnerService)
 
-    service.campaign_service.get_campaigns.return_value = [{"id": 1}]
+    # service.campaign_service.get_campaigns.return_value = [{"id": 1}]
 
-    service.run()
+    # service.run()
 
     # service.campaign_service.get_campaigns.assert_called_once()
     # (service

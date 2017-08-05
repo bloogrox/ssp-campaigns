@@ -1,16 +1,17 @@
+import requests
 from nameko.rpc import rpc, RpcProxy
-from app import campaigns
+import settings
 
 
 class CampaignsRunnerService:
     name = "campaigns_runner_service"
 
-    campaign_service = RpcProxy("campaign_service")
     campaign_processor_service = RpcProxy("campaign_processor_service")
 
     @rpc
     def run(self):
-        # campaigns = self.campaign_service.get_campaigns()
+        url = settings.CABINET_URL + "/api/campaigns/"
+        campaigns = requests.get(url).json()
         for campaign in campaigns:
             print(f"CampaignsRunnerService.run: sending campaign: {campaign}"
                   " for processing.")

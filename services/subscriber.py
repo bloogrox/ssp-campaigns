@@ -21,7 +21,7 @@ class SubscriberService:
             targetings.append({
                 "field": "timezone",
                 "operator": "IN",
-                "value": timezones
+                "values": timezones
             })
         try:
             s = Search(using=es, index="users")
@@ -35,7 +35,7 @@ class SubscriberService:
                 bool_q = Q('bool',
                            **{logical_operator_mappings.get(
                                query.get('operator')
-                           ): Q('terms', **{query["field"]: query["value"]})})
+                           ): Q('terms', **{query["field"]: query["values"]})})
                 q += bool_q
             s = s.query(q)
             s.query = dslq.FunctionScore(
