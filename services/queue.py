@@ -19,6 +19,7 @@ class Queue:
                         content_type='plain/text'
                     )
                 )
-                print(f"Queue.publish published: {payload['_id']}")
+                subscriber_id = payload['subscriber']['_id']
+                print(f"Queue.publish published: {subscriber_id}")
             except Exception as e:
                 print(f"Queue.publish exception: {e}")
