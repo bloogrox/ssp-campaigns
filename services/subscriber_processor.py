@@ -1,5 +1,4 @@
 from nameko.rpc import rpc, RpcProxy
-import settings
 from cabinet import Cabinet
 
 
