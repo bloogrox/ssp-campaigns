@@ -1,5 +1,6 @@
 from nameko.rpc import rpc, RpcProxy
 import settings
+from cabinet import Cabinet
 
 
 class SubscriberProcessorService:
@@ -12,7 +13,9 @@ class SubscriberProcessorService:
     def process_subscriber(self, payload):
         print("SubscriberProcessorService.process_subscriber: "
               f"processing subscriber: {payload}")
-        limit = settings.LIMIT_PER_USER
+        cab = Cabinet("https://ssp-cabinet.herokuapp.com")
+        general_settings = cab.general()
+        limit = general_settings["push_limit_per_token"]
         if self.counter_service.get_pushes_count(payload["_id"]) <= limit:
             self.queue.publish.call_async(payload)
         else:
