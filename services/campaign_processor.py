@@ -47,7 +47,7 @@ class CampaignProcessorService:
             return
         for subscriber in subscribers:
             (self.subscriber_processor_service.process_subscriber
-             .call_async(subscriber))
+             .call_async(dict(campaign=payload, subscriber=subscriber)))
         print("CampaignProcessorService.process_campaign: "
               f"for campaign #{payload['id']} "
               f"processed {len(subscribers)} subscribers")
