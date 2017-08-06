@@ -1,5 +1,5 @@
+import requests
 from nameko.rpc import rpc, RpcProxy
-from app import hours_whitelist
 
 import settings
 
@@ -30,7 +30,12 @@ class CampaignProcessorService:
         #     return None
 
         targetings = payload["targetings"]
-        volume = settings.BIDS_VOLUME
+        url = settings.CABINET_URL + "/api/general/"
+        cabinet_settings = requests.get(url).json()
+        volume = cabinet_settings["bids_volume"]
+        start_hour = cabinet_settings["start_hour"]
+        end_hour = cabinet_settings["end_hour"]
+        hours_whitelist = list(range(start_hour, end_hour + 1))
         subscribers = (self.subscriber_service.get_subscribers(
             targetings,
             hours_whitelist,
