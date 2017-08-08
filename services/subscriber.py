@@ -17,6 +17,11 @@ class SubscriberService:
                          .now(pytz.timezone(tz)).hour
                          in hours_whitelist)]
 
+        targetings.append({
+            "field": "unsub",
+            "operator": "NOT IN",
+            "values": [1, "true"]
+        })
         if timezones:
             targetings.append({
                 "field": "timezone",
@@ -31,9 +36,11 @@ class SubscriberService:
             }
 
             q = Q()
-            for query in targetings:
-                terms_q = Q('terms', **{query["field"]: query["values"]})
-                bool_q = Q('bool', **{operator_mappings['IN']: terms_q})
+            for condition in targetings:
+                condition_pair = {condition["field"]: condition["values"]}
+                terms_q = Q('terms', **condition_pair)
+                bool_operator = operator_mappings[condition['operator']]
+                bool_q = Q('bool', **{bool_operator: terms_q})
                 q += bool_q
             s = s.query(q)
             s.query = dslq.FunctionScore(
