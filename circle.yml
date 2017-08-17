@@ -11,7 +11,6 @@ machine:
     ENV_TYPE: ci
     REDIS_URI: redis://localhost:6379
     AMQP_URI: "amqp://guest:guest@127.0.0.1/"
-    EXT_AMQP_URI: "amqp://guest:guest@127.0.0.1/"
     ELASTIC_URI: "http://127.0.0.1:9200/"
 
 

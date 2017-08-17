@@ -12,7 +12,7 @@ es = connections.create_connection(hosts=[settings.ELASTIC_URI])
 
 # 'amqp://guest:guest@localhost:5672/
 pika_params = pika.URLParameters(
-    settings.EXT_AMQP_URI + '?'
+    settings.AMQP_URI + '?'
     'socket_timeout=10&'
     'connection_attempts=2'
 )

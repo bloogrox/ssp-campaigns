@@ -6,14 +6,6 @@ RabbitMQ:
   ports:
     - "5672:5672"
 
-RabbitMQ_BIGWIG:
-  image: "rabbitmq:3"
-  environment:
-    - RABBITMQ_DEFAULT_USER=guest
-    - RABBITMQ_DEFAULT_PASS=guest
-  ports:
-    - "5673:5672"
-
 Redis:
   image: 'redis:alpine'
   ports:
