@@ -1,4 +1,5 @@
 import requests
+import json
 
 
 class Cabinet(object):
@@ -17,43 +18,41 @@ class Cabinet(object):
         return self.call('campaigns')
 
 
-# class CachedCabinet(object):
+class CachedCabinet(object):
 
-#     def __init__(self, cabinet, engine):
-#         self.cabinet = cabinet
-#         self.engine = engine
+    def __init__(self, cabinet, engine):
+        self.cabinet = cabinet
+        self.engine = engine
 
-#     def __getattr__(self, method):
-#         def wrapper(*args, **kwargs):
-#             cached_value = self.engine.get(method)
-#             if cached_value:
-#                 return cached_value
-#             else:
-#                 new_value = getattr(self.cabinet, method)(*args, **kwargs)
-#                 self.engine.set(method, cached_value)
-#                 return new_value
-#         return wrapper
-
-
-# class RedisCache(object):
-
-#     def __init__(self, client, prefix, ttl):
-#         self.client = client
-#         self.prefix = prefix
-#         self.ttl = ttl
-
-#     def set(self, key, value):
-#         prefixed_key = f"{self.prefix}_{key}"
-#         self.client.set(prefixed_key, value)
-#         self.client.set_ttl(prefixed_key, self.ttl)
-
-#     def get(self, key):
-#         prefixed_key = f"{self.prefix}_{key}"
-#         self.client.get(prefixed_key)
+    def __getattr__(self, method):
+        def wrapper(*args, **kwargs):
+            cached_value = self.engine.get(method)
+            print(f"value in the cache: {cached_value}")
+            if cached_value:
+                print("take cached value")
+                return cached_value
+            else:
+                print("take value from service")
+                new_value = getattr(self.cabinet, method)(*args, **kwargs)
+                self.engine.set(method, new_value)
+                return new_value
+        return wrapper
 
 
-# cached_cabinet = CachedCabinet(
-#     RedisCache(prefix="CABINET_CACHE", ttl=60),
-#     cabinet)
+class RedisEngine(object):
 
-# cached_cabinet.general()
+    def __init__(self, redis_client, prefix, ttl):
+        self.redis_client = redis_client
+        self.prefix = prefix
+        self.ttl = ttl
+
+    def set(self, key, value):
+        prefixed_key = f"{self.prefix}_{key}"
+        self.redis_client.set(prefixed_key, json.dumps(value), ex=self.ttl)
+
+    def get(self, key):
+        prefixed_key = f"{self.prefix}_{key}"
+        value = self.redis_client.get(prefixed_key)
+        if value:
+            return json.loads(value.decode('utf-8'))
+        return value
