@@ -23,7 +23,7 @@ class SubscriberProcessorService:
         limit = general_settings["push_limit_per_token"]
         subscriber_pushes = (self.counter_service
                              .get_pushes_count(payload["subscriber"]["_id"]))
-        if subscriber_pushes <= limit:
+        if subscriber_pushes < limit:
             self.queue.publish.call_async(payload)
         else:
             print("SubscriberProcessorService.process_subscriber: "
