@@ -4,6 +4,9 @@ from nameko.rpc import rpc
 from app import rmq_pool
 
 
+QUEUE = 'sell-imp'
+
+
 class Queue:
     name = "queue"
 
@@ -11,10 +14,14 @@ class Queue:
     def publish(self, payload):
         with rmq_pool.acquire() as cxn:
             try:
+                cxn.channel.queue_declare(queue=QUEUE, auto_delete=True)
+                cxn.channel.queue_bind(queue=QUEUE,
+                                       exchange='',
+                                       routing_key=QUEUE)
                 cxn.channel.basic_publish(
                     body=json.dumps(payload),
                     exchange='',
-                    routing_key='sell-imp',
+                    routing_key=QUEUE,
                     properties=pika.BasicProperties(
                         content_type='plain/text'
                     )
