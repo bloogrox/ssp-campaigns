@@ -15,9 +15,6 @@ class Queue:
         with rmq_pool.acquire() as cxn:
             try:
                 cxn.channel.queue_declare(queue=QUEUE_NAME, auto_delete=True)
-                cxn.channel.queue_bind(queue=QUEUE_NAME,
-                                       exchange='',
-                                       routing_key=QUEUE_NAME)
                 cxn.channel.basic_publish(
                     body=json.dumps(payload),
                     exchange='',
