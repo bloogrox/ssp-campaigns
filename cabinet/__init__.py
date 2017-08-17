@@ -27,12 +27,9 @@ class CachedCabinet(object):
     def __getattr__(self, method):
         def wrapper(*args, **kwargs):
             cached_value = self.engine.get(method)
-            print(f"value in the cache: {cached_value}")
             if cached_value:
-                print("take cached value")
                 return cached_value
             else:
-                print("take value from service")
                 new_value = getattr(self.cabinet, method)(*args, **kwargs)
                 self.engine.set(method, new_value)
                 return new_value
