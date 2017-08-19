@@ -1,5 +1,4 @@
 import redis
-import requests
 from nameko.rpc import rpc, RpcProxy
 from cabinet import Cabinet, CachedCabinet, RedisEngine
 from app import REDIS_POOL
