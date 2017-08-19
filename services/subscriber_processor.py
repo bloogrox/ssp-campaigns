@@ -3,6 +3,7 @@ import redis
 from nameko.rpc import rpc, RpcProxy
 from cabinet import Cabinet, CachedCabinet, RedisEngine
 from app import REDIS_POOL
+import settings
 
 
 class SubscriberProcessorService:
@@ -17,7 +18,7 @@ class SubscriberProcessorService:
               f"processing subscriber: {payload['subscriber']}")
         start_time = time.time()
         redis_client = redis.Redis(connection_pool=REDIS_POOL)
-        cab = Cabinet("https://ssp-cabinet.herokuapp.com")
+        cab = Cabinet(settings.CABINET_URL)
         cached_cabinet = CachedCabinet(
             cab,
             RedisEngine(redis_client, prefix="CABINET_CACHE", ttl=5))

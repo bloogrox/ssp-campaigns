@@ -1,6 +1,8 @@
+import redis
 import requests
 from nameko.rpc import rpc, RpcProxy
-
+from cabinet import Cabinet, CachedCabinet, RedisEngine
+from app import REDIS_POOL
 import settings
 
 
@@ -30,8 +32,12 @@ class CampaignProcessorService:
         #     return None
 
         targetings = payload["targetings"]
-        url = settings.CABINET_URL + "/api/general/"
-        cabinet_settings = requests.get(url).json()
+        redis_client = redis.Redis(connection_pool=REDIS_POOL)
+        cab = Cabinet(settings.CABINET_URL)
+        cached_cabinet = CachedCabinet(
+            cab,
+            RedisEngine(redis_client, prefix="CABINET_CACHE", ttl=5))
+        cabinet_settings = cached_cabinet.general()
         volume = cabinet_settings["bids_volume"]
         start_hour = cabinet_settings["start_hour"]
         end_hour = cabinet_settings["end_hour"]
