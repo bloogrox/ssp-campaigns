@@ -35,7 +35,7 @@ class CampaignProcessorService:
         cab = Cabinet(settings.CABINET_URL)
         cached_cabinet = CachedCabinet(
             cab,
-            RedisEngine(redis_client, prefix="CABINET_CACHE", ttl=5))
+            RedisEngine(redis_client, prefix="CABINET_CACHE", ttl=30))
         cabinet_settings = cached_cabinet.general()
         volume = cabinet_settings["bids_volume"]
         start_hour = cabinet_settings["start_hour"]
