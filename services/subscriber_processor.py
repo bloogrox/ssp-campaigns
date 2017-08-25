@@ -21,7 +21,7 @@ class SubscriberProcessorService:
         cab = Cabinet(settings.CABINET_URL)
         cached_cabinet = CachedCabinet(
             cab,
-            RedisEngine(redis_client, prefix="CABINET_CACHE", ttl=5))
+            RedisEngine(redis_client, prefix="CABINET_CACHE", ttl=30))
         general_settings = cached_cabinet.general()
         end_time = time.time()
         total_time = (end_time - start_time) * 1000
