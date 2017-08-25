@@ -53,8 +53,13 @@ class CampaignProcessorService:
                   f"no subscribers found for campaign: #{payload['id']}")
             return
         for subscriber in subscribers:
+            time1 = time.time()
             (self.subscriber_processor_service.process_subscriber
              .call_async(dict(campaign=payload, subscriber=subscriber)))
+            time2 = time.time()
+            print("CampaignProcessorService.process_campaign: "
+                  "called process_subscriber in "
+                  f"{int((time2 - time1) * 1000)}ms")
         end_time = time.time()
         print("CampaignProcessorService.process_campaign: "
               f"for campaign #{payload['id']} "
