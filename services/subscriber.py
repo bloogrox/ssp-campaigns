@@ -30,39 +30,40 @@ class SubscriberService:
                 "operator": "IN",
                 "values": timezones
             })
-        try:
-            s = Search(using=es, index="users")
-            operator_mappings = {
-                'IN': 'must',
-                'NOT IN': 'must_not',
-            }
+        s = Search(using=es, index="users")
+        operator_mappings = {
+            'IN': 'must',
+            'NOT IN': 'must_not',
+        }
 
-            q = Q()
-            for condition in targetings:
-                condition_pair = {condition["field"]: condition["values"]}
-                terms_q = Q('terms', **condition_pair)
-                bool_operator = operator_mappings[condition['operator']]
-                bool_q = Q('bool', **{bool_operator: terms_q})
-                q += bool_q
-            s = s.query(q)
-            s.query = dslq.FunctionScore(
-                query=s.query,
-                functions=[dslq.SF('random_score')],
-                boost_mode="replace"
-                )
-            s = s[:volume]
+        q = Q()
+        for condition in targetings:
+            condition_pair = {condition["field"]: condition["values"]}
+            terms_q = Q('terms', **condition_pair)
+            bool_operator = operator_mappings[condition['operator']]
+            bool_q = Q('bool', **{bool_operator: terms_q})
+            q += bool_q
+        s = s.query(q)
+        s.query = dslq.FunctionScore(
+            query=s.query,
+            functions=[dslq.SF('random_score')],
+            boost_mode="replace"
+            )
+        s = s[:volume]
+        try:
             res = s.execute()
+        except Exception as e:
+            print(f"SubscriberService.get_subscribers: Exception {e}")
+        else:
             subscribers = []
             for row in res.hits:
                 subscriber = row.to_dict()
                 subscriber['_id'] = row.meta.id
                 subscribers.append(subscriber)
+            end_time = time.time()
+            print(f"SubscriberService.get_subscribers: finished in "
+                  f"{int((end_time - start_time) * 1000)}ms")
             return subscribers
-        except Exception as e:
-            print(f"SubscriberService.get_subscribers: Exception {e}")
-        end_time = time.time()
-        print(f"SubscriberService.get_subscribers: finished in "
-              f"{int((end_time - start_time) * 1000)}ms")
 
     @rpc
     def update_subscriber(self, document):
