@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 import pytz
 
@@ -12,6 +13,7 @@ class SubscriberService:
     @rpc
     def get_subscribers(self, targetings, hours_whitelist, volume):
         print("SubscriberService.get_subscribers: getting subscribers")
+        start_time = time.time()
         timezones = [tz for tz in pytz.all_timezones
                      if (datetime
                          .now(pytz.timezone(tz)).hour
@@ -58,6 +60,9 @@ class SubscriberService:
             return subscribers
         except Exception as e:
             print(f"SubscriberService.get_subscribers: Exception {e}")
+        end_time = time.time()
+        print(f"SubscriberService.get_subscribers: finished in "
+              f"{int((end_time - start_time) * 1000)}ms")
 
     @rpc
     def update_subscriber(self, document):
