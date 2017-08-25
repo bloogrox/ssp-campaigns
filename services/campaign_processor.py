@@ -1,3 +1,4 @@
+import time
 import redis
 from nameko.rpc import rpc, RpcProxy
 from cabinet import Cabinet, CachedCabinet, RedisEngine
@@ -18,6 +19,7 @@ class CampaignProcessorService:
     def process_campaign(self, payload):
         print("CampaignProcessorService.process_campaign: "
               f"processing campaign - {payload}")
+        start_time = time.time()
         # @todo #1:15min daily count check
 
         # total_limit = payload['total_limit']
@@ -53,6 +55,8 @@ class CampaignProcessorService:
         for subscriber in subscribers:
             (self.subscriber_processor_service.process_subscriber
              .call_async(dict(campaign=payload, subscriber=subscriber)))
+        end_time = time.time()
         print("CampaignProcessorService.process_campaign: "
               f"for campaign #{payload['id']} "
-              f"processed {len(subscribers)} subscribers")
+              f"processed {len(subscribers)} subscribers "
+              f"in {(end_time - start_time) * 1000}ms")
