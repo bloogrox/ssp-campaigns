@@ -1,8 +1,8 @@
 import os
 
 
-REDIS_URI = os.environ["REDISCLOUD_URL"]
-AMQP_URI = os.environ["CLOUDAMQP_URL"]
+REDIS_URI = os.environ["REDIS_URL"]
+AMQP_URI = os.environ["RABBITMQ_URL"]
 PUSHW_AUTH_TOKEN = os.environ["PUSHW_AUTH_TOKEN"]
 PUSHW_AUTH_KEY = os.environ["PUSHW_AUTH_KEY"]
 ELASTIC_URI = os.environ['ELASTICSEARCH_URI']
