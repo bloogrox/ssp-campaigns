@@ -1,4 +1,4 @@
-AMQP_URI: ${CLOUDAMQP_URL}
+AMQP_URI: ${RABBITMQ_URL}
 # WEB_SERVER_ADDRESS: '0.0.0.0:8000'
 rpc_exchange: 'nameko-rpc'
 max_workers: 1
