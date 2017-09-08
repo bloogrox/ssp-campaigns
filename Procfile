@@ -4,5 +4,5 @@ subscriberservice: nameko run --config nameko.configs/campaigns.yml services.sub
 campaignprocessorservice: nameko run --config nameko.configs/campaigns.yml services.campaign_processor
 queue: nameko run --config nameko.configs/campaigns.yml services.queue
 counterservice: nameko run --config nameko.configs/campaigns.yml services.counter
-subscriberprocessor_service: nameko run --config nameko.configs/campaigns.yml services.subscriber_processor
+subscriberprocessorservice: nameko run --config nameko.configs/campaigns.yml services.subscriber_processor
 timer: nameko run --config nameko.configs/timer.yml services.timer
