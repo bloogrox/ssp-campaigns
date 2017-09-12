@@ -28,17 +28,30 @@ class SubscriberProcessorService:
         print("SubscriberProcessorService.process_subscriber: "
               f"received settings in {int(total_time)}ms")
         limit = general_settings["push_limit_per_token"]
+        bid_interval = general_settings["token_bid_interval"]
         start_time2 = time.time()
+        token = payload["subscriber"]["_id"]
         subscriber_pushes = (self.counter_service
-                             .get_pushes_count(payload["subscriber"]["_id"]))
+                             .get_pushes_count(token))
         end_time2 = time.time()
         print("SubscriberProcessorService.process_subscriber: "
               f"get_pushes_count in {(end_time2 - start_time2) * 1000}ms")
-        if subscriber_pushes < limit:
+        has_quota = subscriber_pushes < limit
+        last_push_time = redis_client.get(f"subscriber:{token}:last-push-at")
+        if last_push_time:
+            time_passed = time.time() - last_push_time
+            time_passed_enough = time_passed > (bid_interval * 60)
+            print("SubscriberProcessorService.process_subscriber: "
+                  f"passed time since last push {time_passed}")
+        else:
+            time_passed_enough = True
+        if has_quota and time_passed_enough:
             self.queue.publish.call_async(payload)
         else:
             print("SubscriberProcessorService.process_subscriber: "
-                  f"limit for subscriber: {payload} exceeded")
+                  f"for subscriber: {payload} "
+                  f"has_quota={has_quota} "
+                  f"time_passed_enough={time_passed_enough}")
         finish_time = time.time()
         print("SubscriberProcessorService.process_subscriber: "
               f"total execution time {(finish_time - start_time) * 1000}ms")
