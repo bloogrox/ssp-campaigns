@@ -54,7 +54,7 @@ class SubscriberProcessorService:
             redis_client.set(last_bid_key, int(time.time()), ex=DAY_SECONDS)
         else:
             print("SubscriberProcessorService.process_subscriber: "
-                  f"for subscriber: {payload} "
+                  f"for subscriber: {payload['subscriber']['_id']} "
                   f"has_quota={has_quota} "
                   f"time_passed_enough={time_passed_enough}")
         finish_time = time.time()
