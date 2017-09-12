@@ -6,6 +6,9 @@ from app import REDIS_POOL
 import settings
 
 
+DAY_SECONDS = 60 * 60 * 84
+
+
 class SubscriberProcessorService:
     name = "subscriber_processor_service"
 
@@ -37,7 +40,8 @@ class SubscriberProcessorService:
         print("SubscriberProcessorService.process_subscriber: "
               f"get_pushes_count in {(end_time2 - start_time2) * 1000}ms")
         has_quota = subscriber_pushes < limit
-        last_push_time = redis_client.get(f"subscriber:{token}:last-push-at")
+        last_push_key = f"subscriber:{token}:last-push-at"
+        last_push_time = redis_client.get(last_push_key)
         if last_push_time:
             time_passed = time.time() - last_push_time
             time_passed_enough = time_passed > (bid_interval * 60)
@@ -47,6 +51,7 @@ class SubscriberProcessorService:
             time_passed_enough = True
         if has_quota and time_passed_enough:
             self.queue.publish.call_async(payload)
+            redis_client.set(last_push_key, int(time.time()), ex=DAY_SECONDS)
         else:
             print("SubscriberProcessorService.process_subscriber: "
                   f"for subscriber: {payload} "
