@@ -1,3 +1,4 @@
+import logging
 import redis
 import pika
 import pika_pool
@@ -27,3 +28,9 @@ rmq_pool = pika_pool.QueuedPool(
 )
 
 hours_whitelist = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+
+logger = logging.getLogger()
+ch = logging.StreamHandler()
+ch.setLevel(getattr(logging, settings.LOG_LEVEL))
+logger.addHandler(ch)
