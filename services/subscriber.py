@@ -4,7 +4,7 @@ import pytz
 
 from nameko.rpc import rpc
 from elasticsearch_dsl import Search, Q, query as dslq
-from app import es
+from app import es, logger
 
 
 class SubscriberService:
@@ -12,7 +12,7 @@ class SubscriberService:
 
     @rpc
     def get_subscribers(self, targetings, hours_whitelist, volume):
-        print("SubscriberService.get_subscribers: getting subscribers")
+        logger.info("SubscriberService.get_subscribers: getting subscribers")
         start_time = time.time()
         timezones = [tz for tz in pytz.all_timezones
                      if (datetime
@@ -53,7 +53,7 @@ class SubscriberService:
         try:
             res = s.execute()
         except Exception as e:
-            print(f"SubscriberService.get_subscribers: Exception {e}")
+            logger.error(f"SubscriberService.get_subscribers: Exception {e}")
         else:
             subscribers = []
             for row in res.hits:
@@ -61,19 +61,6 @@ class SubscriberService:
                 subscriber['_id'] = row.meta.id
                 subscribers.append(subscriber)
             end_time = time.time()
-            print(f"SubscriberService.get_subscribers: finished in "
-                  f"{int((end_time - start_time) * 1000)}ms")
+            logger.debug(f"SubscriberService.get_subscribers: finished in "
+                         f"{int((end_time - start_time) * 1000)}ms")
             return subscribers
-
-    @rpc
-    def update_subscriber(self, document):
-        try:
-            sid = document['_id']
-            document.pop('_id', None)
-            es.index(index="subscribers", doc_type="post",
-                     id=sid, body=document)
-            print("SubscriberService.update_subscriber: "
-                  f"persisting done successfully for {sid}")
-        except Exception as e:
-            print("SubscriberService.update_subscriber: "
-                  "Exception " + str(e))

@@ -8,7 +8,6 @@ class CounterService:
 
     @rpc
     def get_pushes_count(self, token):
-        print("CounterService.get_pushes_count: requesting push count")
         client = redis.Redis(connection_pool=REDIS_POOL)
         value = client.get(f"subscriber.pushes.count:{token}")
         try:

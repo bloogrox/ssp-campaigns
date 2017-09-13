@@ -2,7 +2,7 @@ import time
 import redis
 from nameko.rpc import rpc, RpcProxy
 from cabinet import Cabinet, CachedCabinet, RedisEngine
-from app import REDIS_POOL
+from app import REDIS_POOL, logger
 import settings
 
 
@@ -17,8 +17,8 @@ class CampaignProcessorService:
 
     @rpc
     def process_campaign(self, payload):
-        print("CampaignProcessorService.process_campaign: "
-              f"processing campaign - {payload}")
+        logger.info("CampaignProcessorService.process_campaign: "
+                    f"processing campaign - {payload}")
         start_time = time.time()
         # @todo #1:15min daily count check
 
@@ -49,19 +49,19 @@ class CampaignProcessorService:
             volume
         ))
         if not subscribers:
-            print("CampaignProcessorService.process_campaign: "
-                  f"no subscribers found for campaign: #{payload['id']}")
+            logger.info("CampaignProcessorService.process_campaign: "
+                        f"no subscribers found for campaign: #{payload['id']}")
             return
         for subscriber in subscribers:
             time1 = time.time()
             (self.subscriber_processor_service.process_subscriber
              .call_async(dict(campaign=payload, subscriber=subscriber)))
             time2 = time.time()
-            print("CampaignProcessorService.process_campaign: "
-                  "called process_subscriber in "
-                  f"{int((time2 - time1) * 1000)}ms")
+            logger.debug("CampaignProcessorService.process_campaign: "
+                         "called process_subscriber in "
+                         f"{int((time2 - time1) * 1000)}ms")
         end_time = time.time()
-        print("CampaignProcessorService.process_campaign: "
-              f"for campaign #{payload['id']} "
-              f"processed {len(subscribers)} subscribers "
-              f"in {(end_time - start_time) * 1000}ms")
+        logger.debug("CampaignProcessorService.process_campaign: "
+                     f"for campaign #{payload['id']} "
+                     f"processed {len(subscribers)} subscribers "
+                     f"in {(end_time - start_time) * 1000}ms")

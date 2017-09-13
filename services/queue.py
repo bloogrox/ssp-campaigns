@@ -1,7 +1,7 @@
 import json
 import pika
 from nameko.rpc import rpc
-from app import rmq_pool
+from app import rmq_pool, logger
 
 
 QUEUE_NAME = 'sell-imp'
@@ -24,6 +24,6 @@ class Queue:
                     )
                 )
                 subscriber_id = payload['subscriber']['_id']
-                print(f"Queue.publish published: {subscriber_id}")
+                logger.info(f"Queue.publish published: {subscriber_id}")
             except Exception as e:
-                print(f"Queue.publish exception: {e}")
+                logger.error(f"Queue.publish exception: {e}")
