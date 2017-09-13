@@ -17,8 +17,8 @@ class SubscriberProcessorService:
 
     @rpc
     def process_subscriber(self, payload):
-        logger.info("SubscriberProcessorService.process_subscriber: "
-                    f"processing subscriber: {payload['subscriber']}")
+        logger.debug("SubscriberProcessorService.process_subscriber: "
+                     f"processing subscriber: {payload['subscriber']}")
         start_time = time.time()
         redis_client = redis.Redis(connection_pool=REDIS_POOL)
         cab = Cabinet(settings.CABINET_URL)
