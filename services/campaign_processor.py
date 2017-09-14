@@ -39,10 +39,10 @@ class CampaignProcessorService:
             cab,
             RedisEngine(redis_client, prefix="CABINET_CACHE", ttl=30))
         cabinet_settings = cached_cabinet.general()
-        volume = cabinet_settings["bids_volume"]
         start_hour = cabinet_settings["start_hour"]
         end_hour = cabinet_settings["end_hour"]
         hours_whitelist = list(range(start_hour, end_hour + 1))
+        volume = payload["subscriber_selection_size"]
         subscribers = (self.subscriber_service.get_subscribers(
             targetings,
             hours_whitelist,
