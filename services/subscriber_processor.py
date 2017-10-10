@@ -42,7 +42,7 @@ class SubscriberProcessorService:
                      f"{(end_time2 - start_time2) * 1000}ms")
         has_quota = subscriber_pushes < limit
         last_bid_key = f"subscriber:{token}:last-bid-at"
-        last_bid_time = redis_client.get(last_bid_key)
+        last_bid_time = int(redis_client.get(last_bid_key))
         if last_bid_time:
             time_passed = time.time() - last_bid_time
             time_passed_enough = time_passed > (bid_interval * 60)
