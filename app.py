@@ -12,7 +12,6 @@ REDIS_POOL = redis.ConnectionPool.from_url(settings.REDIS_URI)
 
 es = connections.create_connection(hosts=[settings.ELASTIC_URI])
 
-# 'amqp://guest:guest@localhost:5672/
 pika_params = pika.URLParameters(
     settings.AMQP_URI + '?'
     'socket_timeout=10&'
