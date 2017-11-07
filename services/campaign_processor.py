@@ -61,7 +61,7 @@ class CampaignProcessorService:
                          "called process_subscriber in "
                          f"{int((time2 - time1) * 1000)}ms")
         end_time = time.time()
-        logger.debug("CampaignProcessorService.process_campaign: "
-                     f"for campaign #{payload['id']} "
-                     f"processed {len(subscribers)} subscribers "
-                     f"in {(end_time - start_time) * 1000}ms")
+        logger.info("CampaignProcessorService.process_campaign: "
+                    f"for campaign #{payload['id']} "
+                    f"processed {len(subscribers)} subscribers "
+                    f"in {(end_time - start_time) * 1000}ms")
