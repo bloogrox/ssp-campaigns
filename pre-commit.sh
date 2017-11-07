@@ -1,3 +1,3 @@
 flake8
 
-python -m pytest
+# python -m pytest
