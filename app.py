@@ -28,9 +28,6 @@ rmq_pool = pika_pool.QueuedPool(
     stale=45,
 )
 
-hours_whitelist = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-
-
 logger = logging.getLogger()
 ch = logging.StreamHandler(sys.stdout)
 ch.setLevel(getattr(logging, settings.LOG_LEVEL))
