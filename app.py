@@ -32,7 +32,6 @@ hours_whitelist = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
 
 logger = logging.getLogger()
-logger.setLevel(getattr(logging, settings.LOG_LEVEL))
 ch = logging.StreamHandler(sys.stdout)
 ch.setLevel(getattr(logging, settings.LOG_LEVEL))
 logger.addHandler(ch)
