@@ -27,7 +27,8 @@ rmq_pool = pika_pool.QueuedPool(
     stale=45,
 )
 
-logger = logging.getLogger()
+logger = logging.getLogger('Campaigns')
+logger.setLevel(getattr(logging, settings.LOG_LEVEL))
 ch = logging.StreamHandler(sys.stdout)
 ch.setLevel(getattr(logging, settings.LOG_LEVEL))
 logger.addHandler(ch)
