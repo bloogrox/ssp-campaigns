@@ -1,5 +1,6 @@
 from nameko.rpc import RpcProxy
 from nameko.timer import timer
+from app import logger
 
 
 class Timer:
@@ -10,5 +11,5 @@ class Timer:
 
     @timer(interval=1)
     def run_campaigns(self):
-        print("tick")
+        logger.debug("tick")
         self.campaigns_runner_service.run.call_async()
