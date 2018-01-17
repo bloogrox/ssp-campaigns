@@ -9,7 +9,7 @@ class Cabinet(object):
 
     def call(self, method_name):
         url = self.base_url + f"/api/{method_name}/"
-        return requests.get(url).json()
+        return requests.get(url, timeout=1).json()
 
     def general(self):
         return self.call('general')

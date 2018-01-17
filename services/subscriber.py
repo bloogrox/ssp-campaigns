@@ -30,7 +30,7 @@ class SubscriberService:
                 "operator": "IN",
                 "values": timezones
             })
-        s = Search(using=es, index="users")
+        s = Search(using=es, index="users", timeout=1)
         operator_mappings = {
             'IN': 'must',
             'NOT IN': 'must_not',

@@ -13,7 +13,8 @@ class CampaignsRunnerService:
     @rpc
     def run(self):
         logger.debug('campaign_processor_service.run')
-        redis_client = redis.Redis(connection_pool=REDIS_POOL)
+        redis_client = redis.Redis(connection_pool=REDIS_POOL,
+                                   socket_timeout=1)
         cab = Cabinet(settings.CABINET_URL)
         cached_cabinet = CachedCabinet(
             cab,

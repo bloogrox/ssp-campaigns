@@ -33,7 +33,8 @@ class CampaignProcessorService:
         #     return None
 
         targetings = payload["targetings"]
-        redis_client = redis.Redis(connection_pool=REDIS_POOL)
+        redis_client = redis.Redis(connection_pool=REDIS_POOL,
+                                   socket_timeout=1)
         cab = Cabinet(settings.CABINET_URL)
         cached_cabinet = CachedCabinet(
             cab,

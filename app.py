@@ -14,7 +14,7 @@ es = connections.create_connection(hosts=[settings.ELASTIC_URI])
 
 pika_params = pika.URLParameters(
     settings.AMQP_URI + '?'
-    'socket_timeout=10&'
+    'socket_timeout=1&'
     'connection_attempts=2'
 )
 

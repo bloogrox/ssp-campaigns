@@ -20,7 +20,8 @@ class SubscriberProcessorService:
         logger.debug("SubscriberProcessorService.process_subscriber: "
                      f"processing subscriber: {payload['subscriber']}")
         start_time = time.time()
-        redis_client = redis.Redis(connection_pool=REDIS_POOL)
+        redis_client = redis.Redis(connection_pool=REDIS_POOL,
+                                   socket_timeout=1)
         cab = Cabinet(settings.CABINET_URL)
         cached_cabinet = CachedCabinet(
             cab,
