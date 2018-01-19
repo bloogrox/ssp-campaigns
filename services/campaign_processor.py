@@ -3,6 +3,7 @@ import redis
 from nameko.rpc import rpc, RpcProxy
 from cabinet import Cabinet, CachedCabinet, RedisEngine
 from app import REDIS_POOL, logger
+from dao import get_subscribers
 from utils import Timer
 import settings
 
@@ -13,7 +14,6 @@ class CampaignProcessorService:
     name = "campaign_processor_service"
 
     stats_service = RpcProxy("stats_service")
-    subscriber_service = RpcProxy("subscriber_service")
     subscriber_processor_service = RpcProxy("subscriber_processor_service")
 
     @rpc
@@ -46,7 +46,7 @@ class CampaignProcessorService:
         hours_whitelist = list(range(start_hour, end_hour + 1))
         volume = payload["subscriber_selection_size"]
         with Timer() as t:
-            subscribers = (self.subscriber_service.get_subscribers(
+            subscribers = (get_subscribers(
                 targetings,
                 hours_whitelist,
                 volume
