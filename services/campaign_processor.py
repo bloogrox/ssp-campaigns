@@ -3,6 +3,7 @@ import redis
 from nameko.rpc import rpc, RpcProxy
 from cabinet import Cabinet, CachedCabinet, RedisEngine
 from app import REDIS_POOL, logger
+from utils import Timer
 import settings
 
 
@@ -44,11 +45,14 @@ class CampaignProcessorService:
         end_hour = cabinet_settings["end_hour"]
         hours_whitelist = list(range(start_hour, end_hour + 1))
         volume = payload["subscriber_selection_size"]
-        subscribers = (self.subscriber_service.get_subscribers(
-            targetings,
-            hours_whitelist,
-            volume
-        ))
+        with Timer() as t:
+            subscribers = (self.subscriber_service.get_subscribers(
+                targetings,
+                hours_whitelist,
+                volume
+            ))
+        logger.debug("CampaignProcessorService.process_campaign: "
+                     "Request to get subsctiber took %.03f sec." % t.interval)
         if not subscribers:
             logger.info("CampaignProcessorService.process_campaign: "
                         f"no subscribers found for campaign: #{payload['id']}")
