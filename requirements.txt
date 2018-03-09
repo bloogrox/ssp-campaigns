@@ -36,4 +36,4 @@ urllib3==1.21.1
 Werkzeug==0.12.2
 wrapt==1.10.10
 git+https://github.com/bloogrox/elasticsearch-dsl-py@boost-mode
-
+Pykka==1.2.1
