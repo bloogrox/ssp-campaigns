@@ -2,7 +2,7 @@ import time
 import redis
 from nameko.rpc import rpc, RpcProxy
 from cabinet import Cabinet, CachedCabinet, RedisEngine
-from app import REDIS_POOL, logger
+from app import REDIS_POOL, logger, subscriber_processor_ref
 from dao import get_subscribers
 from utils import Timer
 import settings
@@ -59,8 +59,10 @@ class CampaignProcessorService:
             return
         for subscriber in subscribers:
             time1 = time.time()
-            (self.subscriber_processor_service.process_subscriber
-             .call_async(dict(campaign=payload, subscriber=subscriber)))
+            message = dict(campaign=payload, subscriber=subscriber)
+            subscriber_processor_ref.tell(message)
+            # (self.subscriber_processor_service.process_subscriber
+            #  .call_async(dict(campaign=payload, subscriber=subscriber)))
             time2 = time.time()
             logger.debug("CampaignProcessorService.process_campaign: "
                          "called process_subscriber in "
