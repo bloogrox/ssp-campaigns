@@ -26,18 +26,12 @@ class CachedCabinet(object):
 
     def __getattr__(self, method):
         def wrapper(*args, **kwargs):
-            print(f'requesting from cache {method}')
             cached_value = self.engine.get(method)
-            print(f'received from cache {cached_value}')
             if cached_value:
-                print(f'returning cached value')
                 return cached_value
             else:
-                print(f'requesting from remote service {method}')
                 new_value = getattr(self.cabinet, method)(*args, **kwargs)
-                print(f'received from remote service {new_value}')
                 self.engine.set(method, new_value)
-                print(f'and returning {new_value}')
                 return new_value
         return wrapper
 
@@ -51,19 +45,12 @@ class RedisEngine(object):
 
     def set(self, key, value):
         prefixed_key = f"{self.prefix}_{key}"
-        print(f'redis.set: {prefixed_key}={json.dumps(value)} '
-              f'with ttl={self.ttl}')
-        res = self.redis_client.set(prefixed_key, json.dumps(value),
-                                    ex=self.ttl)
-        print(f'redis.set: result {res}')
+        self.redis_client.set(prefixed_key, json.dumps(value),
+                              ex=self.ttl)
 
     def get(self, key):
         prefixed_key = f"{self.prefix}_{key}"
-        print(f'redis.get: {prefixed_key}')
         value = self.redis_client.get(prefixed_key)
-        print(f'redis.get: received {value}')
         if value:
-            print(f"redis.get: returning {json.loads(value.decode('utf-8'))}")
             return json.loads(value.decode('utf-8'))
-        print(f'redis.get: returning {value}')
         return value
