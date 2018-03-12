@@ -21,6 +21,6 @@ class Queue(pykka.ThreadingActor):
                     )
                 )
                 subscriber_id = payload['subscriber']['_id']
-                logger.info(f"Queue.publish published: {subscriber_id}")
+                logger.debug(f"Queue.publish published: {subscriber_id}")
             except Exception as e:
                 logger.error(f"Queue.publish exception: {e}")
