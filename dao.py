@@ -8,7 +8,7 @@ from app import es, logger
 
 
 def get_subscribers(targetings, hours_whitelist, volume):
-    logger.info("get_subscribers: getting subscribers")
+    logger.debug("get_subscribers: getting subscribers")
     start_time = time.time()
     timezones = [tz
                  for tz in pytz.all_timezones
