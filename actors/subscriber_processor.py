@@ -49,9 +49,11 @@ class SubscriberProcessor(pykka.ThreadingActor):
             if settings.SSP_VERSION == 1:
                 logger.debug("process_subscriber: queue_ref.tell")
                 queue_ref.tell(payload)
-            else:
+            elif settings.SSP_VERSION == 2:
                 logger.debug("process_subscriber: telling to ssp actor")
                 ssp_ref.tell(payload)
+            else:
+                logger.debug("process_subscriber: SSP_VERSION != 1,2")
             # self.queue.publish.call_async(payload)
             redis_client.set(last_bid_key, int(time.time()), ex=DAY_SECONDS)
         else:
