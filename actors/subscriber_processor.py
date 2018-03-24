@@ -47,6 +47,7 @@ class SubscriberProcessor(pykka.ThreadingActor):
             time_passed_enough = True
         if has_quota and time_passed_enough:
             if settings.SSP_VERSION == 2:
+                logger.debug("process_subscriber: telling to ssp actor")
                 ssp_ref.tell(payload)
             else:
                 queue_ref.tell(payload)
