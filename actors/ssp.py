@@ -1,6 +1,7 @@
 import pykka
 import requests
 import settings
+from app import logger
 
 
 class SSP(pykka.ThreadingActor):
@@ -15,3 +16,5 @@ class SSP(pykka.ThreadingActor):
         if resp.status_code != 202:
             raise Exception("SSP response: "
                             f"{resp.status_code} {resp.content}")
+
+        logger.debug(f"SSP: ssp response {resp.content}")
