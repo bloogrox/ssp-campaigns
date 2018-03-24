@@ -23,7 +23,6 @@ class SubscriberProcessor(pykka.ThreadingActor):
         general_settings = cached_cabinet.general()
         limit = general_settings["push_limit_per_token"]
         bid_interval = general_settings["token_bid_interval"]
-        start_time2 = time.time()
         token = payload["subscriber"]["_id"]
         subscriber_pushes = redis_client.get(
             f"subscriber.pushes.count:{token}")
@@ -33,10 +32,6 @@ class SubscriberProcessor(pykka.ThreadingActor):
             subscriber_pushes = 0
         # subscriber_pushes = (self.counter_service
         #  .get_pushes_count(token))
-        end_time2 = time.time()
-        logger.debug("SubscriberProcessorService.process_subscriber: "
-                     "get_pushes_count in "
-                     f"{(end_time2 - start_time2) * 1000}ms")
         has_quota = subscriber_pushes < limit
         last_bid_key = f"subscriber:{token}:last-bid-at"
         try:
