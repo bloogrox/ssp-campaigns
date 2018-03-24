@@ -21,10 +21,6 @@ class SubscriberProcessor(pykka.ThreadingActor):
             cab,
             RedisEngine(redis_client, prefix="CABINET_CACHE", ttl=30))
         general_settings = cached_cabinet.general()
-        end_time = time.time()
-        total_time = (end_time - start_time) * 1000
-        logger.debug("SubscriberProcessorService.process_subscriber: "
-                     f"received settings in {int(total_time)}ms")
         limit = general_settings["push_limit_per_token"]
         bid_interval = general_settings["token_bid_interval"]
         start_time2 = time.time()
