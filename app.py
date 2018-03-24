@@ -41,3 +41,7 @@ queue_ref = Queue.start()
 from actors.subscriber_processor import SubscriberProcessor  # noqa
 
 subscriber_processor_ref = SubscriberProcessor.start()
+
+from actors.ssp import SSP  # noqa
+
+ssp_ref = SSP.start()
