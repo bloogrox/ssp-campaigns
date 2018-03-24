@@ -2,7 +2,7 @@ import time
 import pykka
 import redis
 from cabinet import Cabinet, CachedCabinet, RedisEngine
-from app import REDIS_POOL, logger, queue_ref, ssp_ref
+from app import REDIS_POOL, logger, ssp_ref  # queue_ref
 import settings
 
 
@@ -46,14 +46,12 @@ class SubscriberProcessor(pykka.ThreadingActor):
         else:
             time_passed_enough = True
         if has_quota and time_passed_enough:
-            if settings.SSP_VERSION == 1:
-                logger.debug("process_subscriber: queue_ref.tell")
-                queue_ref.tell(payload)
-            elif settings.SSP_VERSION == 2:
-                logger.debug("process_subscriber: telling to ssp actor")
-                ssp_ref.tell(payload)
-            else:
-                logger.debug("process_subscriber: SSP_VERSION != 1,2")
+            # if settings.SSP_VERSION == 1:
+            #     logger.debug("process_subscriber: queue_ref.tell")
+            #     queue_ref.tell(payload)
+            # else:
+            logger.debug("process_subscriber: telling to ssp actor")
+            ssp_ref.tell(payload)
             # self.queue.publish.call_async(payload)
             redis_client.set(last_bid_key, int(time.time()), ex=DAY_SECONDS)
         else:
