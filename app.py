@@ -34,6 +34,10 @@ ch.setLevel(getattr(logging, settings.LOG_LEVEL))
 logger.addHandler(ch)
 
 
+from actors.ssp import SSP  # noqa
+
+ssp_ref = SSP.start()
+
 from actors.queue import Queue  # noqa
 
 queue_ref = Queue.start()
@@ -41,7 +45,3 @@ queue_ref = Queue.start()
 from actors.subscriber_processor import SubscriberProcessor  # noqa
 
 subscriber_processor_ref = SubscriberProcessor.start()
-
-# from actors.ssp import SSP  # noqa
-
-# ssp_ref = SSP.start()
