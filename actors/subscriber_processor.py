@@ -50,6 +50,7 @@ class SubscriberProcessor(pykka.ThreadingActor):
                 logger.debug("process_subscriber: telling to ssp actor")
                 ssp_ref.tell(payload)
             else:
+                logger.debug("process_subscriber: queue_ref.tell")
                 queue_ref.tell(payload)
             # self.queue.publish.call_async(payload)
             redis_client.set(last_bid_key, int(time.time()), ex=DAY_SECONDS)
