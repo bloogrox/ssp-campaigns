@@ -7,10 +7,16 @@ from app import logger
 class SSP(pykka.ThreadingActor):
     def on_receive(self, payload):
         try:
-            payload["subscriber"]["token"] = payload["subscriber"]["_id"]
+            s = payload["subscriber"]
+            for f in payload["campaign"]["dsp"]["ext_fields"]:
+                if s[f] is None:
+                    s[f] = ""
+                else:
+                    s[f] = str(s[f])
+
             data = {
                 "dsp": payload["campaign"]["dsp"],
-                "subscriber": payload["subscriber"]
+                "subscriber": s
             }
             resp = requests.post(settings.SSP_URL + "/sell/", json=data)
 
