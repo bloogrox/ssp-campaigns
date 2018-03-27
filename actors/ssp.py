@@ -8,11 +8,12 @@ class SSP(pykka.ThreadingActor):
     def on_receive(self, payload):
         try:
             s = payload["subscriber"]
+            s["ext_data"] = {}
             for f in payload["campaign"]["dsp"]["ext_fields"]:
                 if s[f] is None:
                     s[f] = ""
                 else:
-                    s[f] = str(s[f])
+                    s["ext_data"][f] = str(s[f])
 
             data = {
                 "dsp": payload["campaign"]["dsp"],
