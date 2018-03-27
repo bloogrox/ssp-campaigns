@@ -10,10 +10,9 @@ class SSP(pykka.ThreadingActor):
             s = payload["subscriber"]
             s["ext_data"] = {}
             for f in payload["campaign"]["dsp"]["ext_fields"]:
-                if s[f] is None:
-                    s[f] = ""
-                else:
-                    s["ext_data"][f] = str(s[f])
+                if f in s:
+                    if s[f] is not None:
+                        s["ext_data"][f] = str(s[f])
 
             data = {
                 "dsp": payload["campaign"]["dsp"],
