@@ -19,6 +19,8 @@ class SSP(pykka.ThreadingActor):
                 "dsp": payload["campaign"]["dsp"],
                 "subscriber": s
             }
+
+            logger.debug(f"SSP: sending data: {data}")
             resp = requests.post(settings.SSP_URL + "/sell/", json=data)
 
             if resp.status_code != 202:
