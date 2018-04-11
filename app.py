@@ -38,6 +38,10 @@ from actors.ssp import SSP  # noqa
 
 ssp_ref = SSP.start()
 
+from actors.ssp_py import SspPy  # noqa
+
+ssp_py_ref = SspPy.start()
+
 from actors.queue import Queue  # noqa
 
 queue_ref = Queue.start()

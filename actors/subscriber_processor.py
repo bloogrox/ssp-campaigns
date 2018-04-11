@@ -2,7 +2,7 @@ import time
 import pykka
 import redis
 from cabinet import Cabinet, CachedCabinet, RedisEngine
-from app import REDIS_POOL, logger, ssp_ref, queue_ref
+from app import REDIS_POOL, logger, ssp_ref, queue_ref, ssp_py_ref
 import settings
 
 
@@ -12,11 +12,11 @@ DAY_SECONDS = 60 * 60 * 84
 class SubscriberProcessor(pykka.ThreadingActor):
     def on_receive(self, payload):
         try:
-            logger.debug(
-                "SubscriberProcessorService.process_subscriber: "
-                f"processing subscriber: {payload['subscriber']}"
-            )
-            start_time = time.time()
+            # logger.debug(
+            #     "SubscriberProcessorService.process_subscriber: "
+            #     f"processing subscriber: {payload['subscriber']}"
+            # )
+            # start_time = time.time()
             redis_client = redis.Redis(
                 connection_pool=REDIS_POOL,
                 socket_timeout=1)
@@ -52,12 +52,7 @@ class SubscriberProcessor(pykka.ThreadingActor):
             else:
                 time_passed_enough = True
             if has_quota and time_passed_enough:
-                if settings.SSP_VERSION == 1:
-                    logger.debug("process_subscriber: queue_ref.tell")
-                    queue_ref.tell(payload)
-                else:
-                    logger.debug("process_subscriber: telling to ssp actor")
-                    ssp_ref.tell(payload)
+                send_to_ssp(payload)
                 # self.queue.publish.call_async(payload)
                 redis_client.set(
                     last_bid_key,
@@ -71,11 +66,23 @@ class SubscriberProcessor(pykka.ThreadingActor):
                     f"has_quota={has_quota} "
                     f"time_passed_enough={time_passed_enough}"
                 )
-            finish_time = time.time()
-            logger.debug(
-                "SubscriberProcessorService.process_subscriber: "
-                "total execution time "
-                f"{(finish_time - start_time) * 1000}ms"
-            )
+            # finish_time = time.time()
+            # logger.debug(
+            #     "SubscriberProcessorService.process_subscriber: "
+            #     "total execution time "
+            #     f"{(finish_time - start_time) * 1000}ms"
+            # )
         except Exception as e:
             logger.error(f"SubscriberProcessor: exception {e}")
+
+
+def send_to_ssp(payload):
+    if settings.SSP_VERSION == 1:
+        logger.debug("process_subscriber: queue_ref.tell")
+        queue_ref.tell(payload)
+    elif settings.SSP_VERSION == 2:
+        logger.debug("process_subscriber: telling to ssp actor")
+        ssp_ref.tell(payload)
+    elif settings.SSP_VERSION == 3:
+        logger.debug("process_subscriber: telling to ssp actor")
+        ssp_py_ref.tell(payload)
