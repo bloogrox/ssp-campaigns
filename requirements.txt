@@ -33,7 +33,7 @@ redis==2.10.5
 requests==2.18.1
 six==1.10.0
 urllib3==1.26.5
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 wrapt==1.10.10
 git+https://github.com/bloogrox/elasticsearch-dsl-py@boost-mode
 Pykka==1.2.1
